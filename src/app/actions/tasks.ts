@@ -25,7 +25,10 @@ type ActivityAction =
   | "reorder"
   | "delete"
   | "queue_add"
-  | "queue_remove";
+  | "queue_remove"
+  | "queue_complete"
+  | "queue_archive"
+  | "queue_restore";
 
 async function logActivity(
   supabase: Supa,
@@ -186,9 +189,20 @@ export async function deleteTask(id: string) {
 /** Cola de implementación. */
 export async function queueAdd(taskId: string) {
   const { supabase, userId } = await requireUser();
+
+  // dedupe entre entradas ACTIVAS (no archivadas)
+  const { data: existing } = await supabase
+    .from("impl_queue")
+    .select("*")
+    .eq("task_id", taskId)
+    .is("archived_at", null)
+    .maybeSingle();
+  if (existing) return existing;
+
   const { data: last } = await supabase
     .from("impl_queue")
     .select("position")
+    .is("archived_at", null)
     .order("position", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -196,13 +210,73 @@ export async function queueAdd(taskId: string) {
 
   const { data, error } = await supabase
     .from("impl_queue")
-    .upsert({ task_id: taskId, position, added_by: userId }, { onConflict: "task_id" })
+    .insert({ task_id: taskId, position, added_by: userId })
     .select("*")
     .single();
   if (error) throw new Error(error.message);
   await logActivity(supabase, userId, taskId, "queue_add");
   revalidatePath("/");
   return data;
+}
+
+/** Avanza el estado de una entrada de la cola: activa → completada → historial. */
+export async function queueAdvance(
+  entryId: string,
+): Promise<{ stage: "completed" | "archived" }> {
+  const { supabase, userId } = await requireUser();
+  const { data: entry } = await supabase
+    .from("impl_queue")
+    .select("task_id, completed_at")
+    .eq("id", entryId)
+    .single();
+
+  if (entry && !entry.completed_at) {
+    await supabase
+      .from("impl_queue")
+      .update({ completed_at: new Date().toISOString() })
+      .eq("id", entryId);
+    await logActivity(supabase, userId, entry.task_id, "queue_complete");
+    revalidatePath("/");
+    return { stage: "completed" };
+  }
+
+  await supabase
+    .from("impl_queue")
+    .update({ archived_at: new Date().toISOString() })
+    .eq("id", entryId);
+  if (entry) await logActivity(supabase, userId, entry.task_id, "queue_archive");
+  revalidatePath("/");
+  revalidatePath("/historial");
+  return { stage: "archived" };
+}
+
+/** Reactiva una entrada archivada (la saca del historial de vuelta a la cola). */
+export async function queueRestore(entryId: string) {
+  const { supabase, userId } = await requireUser();
+  const { data: entry } = await supabase
+    .from("impl_queue")
+    .select("task_id")
+    .eq("id", entryId)
+    .single();
+  const { data: last } = await supabase
+    .from("impl_queue")
+    .select("position")
+    .is("archived_at", null)
+    .order("position", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  await supabase
+    .from("impl_queue")
+    .update({
+      archived_at: null,
+      completed_at: null,
+      position: (last?.position ?? 0) + 1000,
+    })
+    .eq("id", entryId);
+  if (entry) await logActivity(supabase, userId, entry.task_id, "queue_restore");
+  revalidatePath("/");
+  revalidatePath("/historial");
+  return { ok: true };
 }
 
 export async function queueRemove(entryId: string, taskId: string) {

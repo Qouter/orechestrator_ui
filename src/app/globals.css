@@ -720,6 +720,111 @@ p {
   line-height: 1.45;
   padding: 14px 6px;
 }
+.queue-hist-link {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+.queue-hist-link:hover {
+  color: var(--ink);
+}
+.queue-item.done .queue-title {
+  text-decoration: line-through;
+  color: var(--ink-faint);
+}
+.queue-item.done .queue-num {
+  color: var(--pg-hecho);
+}
+.icon-btn.adv:hover {
+  color: var(--pg-hecho);
+  background: var(--panel);
+}
+.icon-btn.adv-done {
+  color: var(--pg-hecho);
+}
+.icon-btn.adv-done:hover {
+  color: var(--ink);
+  background: var(--panel);
+}
+
+/* ── Historial ──────────────────────────────────────────────────────────── */
+.hist {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+  width: 100%;
+}
+.hist-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-decoration: none;
+  margin-bottom: 18px;
+}
+.hist-back:hover {
+  color: var(--ink);
+}
+.hist h1 {
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.hist-sub {
+  color: var(--ink-muted);
+  font-size: var(--t-md);
+  margin: 0 0 22px;
+}
+.hist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  padding: 13px 15px;
+}
+.hist-check {
+  color: var(--pg-hecho);
+  flex: none;
+}
+.hist-body {
+  flex: 1;
+  min-width: 0;
+}
+.hist-title {
+  font-size: var(--t-base);
+  font-weight: 500;
+}
+.hist-meta {
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  margin-top: 2px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.hist-phase {
+  font-weight: 600;
+}
+.hist-empty {
+  color: var(--ink-muted);
+  font-size: var(--t-md);
+  padding: 32px 4px;
+  text-align: center;
+}
+.hist-restore {
+  flex: none;
+}
 
 /* ── Like a la sección Orden de implementación ──────────────────────────── */
 .like-bar {

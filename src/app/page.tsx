@@ -19,6 +19,7 @@ export default async function Page() {
     supabase
       .from("impl_queue")
       .select("*")
+      .is("archived_at", null)
       .order("position", { ascending: true }),
     supabase
       .from("impl_order_likes")

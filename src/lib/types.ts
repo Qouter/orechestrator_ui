@@ -62,6 +62,8 @@ export interface QueueEntry {
   position: number;
   added_by: string | null;
   created_at: string;
+  completed_at: string | null;
+  archived_at: string | null;
 }
 
 export interface Activity {
@@ -75,7 +77,10 @@ export interface Activity {
     | "reorder"
     | "delete"
     | "queue_add"
-    | "queue_remove";
+    | "queue_remove"
+    | "queue_complete"
+    | "queue_archive"
+    | "queue_restore";
   changes: Record<string, { from: unknown; to: unknown }> | null;
   created_at: string;
   actor?: Profile | null;

@@ -278,6 +278,9 @@ const ACTION_LABEL: Record<Activity["action"], string> = {
   delete: "borró",
   queue_add: "añadió a la cola",
   queue_remove: "quitó de la cola",
+  queue_complete: "marcó completada en la cola",
+  queue_archive: "pasó al historial",
+  queue_restore: "restauró desde el historial",
 };
 
 function ActivityList({ activity }: { activity: Activity[] | null }) {

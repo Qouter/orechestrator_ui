@@ -23,6 +23,7 @@ import { ComplexityBadge } from "./ComplexityBadge";
 import {
   moveTask,
   queueAdd,
+  queueAdvance,
   queueRemove,
   queueReorder,
 } from "@/app/actions/tasks";
@@ -272,6 +273,8 @@ export function BoardView({
       position: (queue.at(-1)?.position ?? 0) + 1000,
       added_by: null,
       created_at: new Date().toISOString(),
+      completed_at: null,
+      archived_at: null,
     };
     setQueue((prev) => [...prev, tmp]);
     queueAdd(taskId)
@@ -287,6 +290,22 @@ export function BoardView({
     setQueue((prev) => prev.filter((e) => e.id !== entry.id));
     if (!entry.id.startsWith("tmp-"))
       queueRemove(entry.id, entry.task_id).catch(() => {});
+  }
+
+  // 1er clic: completa (se queda tachada). 2º clic: pasa al historial.
+  function advanceQueueItem(entry: QueueEntry) {
+    if (!entry.completed_at) {
+      setQueue((prev) =>
+        prev.map((e) =>
+          e.id === entry.id
+            ? { ...e, completed_at: new Date().toISOString() }
+            : e,
+        ),
+      );
+    } else {
+      setQueue((prev) => prev.filter((e) => e.id !== entry.id));
+    }
+    if (!entry.id.startsWith("tmp-")) queueAdvance(entry.id).catch(() => {});
   }
 
   function upsertTask(task: Task) {
@@ -335,6 +354,7 @@ export function BoardView({
           <ImplQueue
             rows={queueRows}
             onRemove={removeFromQueue}
+            onAdvance={advanceQueueItem}
             likers={likers}
             likedByMe={likedByMe}
             onToggleLike={toggleLike}
