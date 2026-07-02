@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mis proyectos — Alejandro</title>
+<style>
+  :root{--bg:#0e1116;--surface:#171c24;--surface-2:#1e2530;--line:#2a323f;
+    --text:#e6eaf0;--muted:#9aa6b6;--faint:#6b7686;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.2);}
+  *{box-sizing:border-box;}html,body{margin:0;padding:0;}
+  body{background:radial-gradient(1200px 600px at 70% -10%,#1a2230 0,var(--bg) 55%);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased;padding:40px 32px 80px;}
+  .wrap{max-width:1180px;margin:0 auto;}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600;}
+  h1{font-size:30px;margin:6px 0 4px;font-weight:700;letter-spacing:-.02em;}
+  .sub{color:var(--muted);font-size:15px;max-width:680px;}
+  .meta-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted);}
+  .meta-row b{color:var(--text);font-weight:600;}
+
+  .tabs{display:flex;gap:6px;margin:22px 0 4px;border-bottom:1px solid var(--line);}
+  .tab{appearance:none;background:transparent;border:none;color:var(--muted);font:inherit;font-size:14px;
+    font-weight:600;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;}
+  .tab:hover{color:var(--text);}
+  .tab.on{color:var(--text);border-bottom-color:#5b8cff;}
+  .panel{display:none;}.panel.on{display:block;animation:fade .2s;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .hint-bar{font-size:12.5px;color:var(--faint);margin:14px 0 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .hint-bar b{color:var(--muted);font-weight:700;}
+  .hint-bar .reset{appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;font:inherit;font-size:11px;padding:2px 10px;cursor:pointer;}
+  .hint-bar .reset:hover{border-color:var(--muted);color:var(--text);}
+
+  .worktop{display:flex;gap:18px;align-items:flex-start;margin-top:12px;}
+  .leftcol{flex:1;min-width:0;}
+  @media(max-width:860px){.worktop{flex-direction:column;}}
+  .rightcol{width:340px;flex:none;position:sticky;top:16px;background:var(--surface);border:1px solid var(--line);
+    border-radius:14px;padding:14px 16px;max-height:calc(100vh - 32px);overflow:auto;}
+  @media(max-width:860px){.rightcol{width:100%;position:static;}}
+  .implhead{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:10px;}
+  .implhead .reset{appearance:none;background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;font:inherit;font-size:11px;padding:2px 10px;cursor:pointer;}
+  .implhead .reset:hover{border-color:#ff6b5e;color:#ff6b5e;}
+  .impl{display:flex;flex-direction:column;gap:8px;min-height:90px;border:1px dashed var(--line);border-radius:10px;padding:8px;}
+  .impl.drop-hi{border-color:#5b8cff;background:color-mix(in srgb,#5b8cff 6%,transparent);}
+  .implempty{font-size:11.5px;color:var(--faint);margin-top:10px;line-height:1.45;}
+  .impl .ctask{background:var(--surface-2);}
+  .impl .ctn{display:none;}
+  .inum{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:12px;color:var(--accent);
+    min-width:18px;text-align:center;flex:none;margin-top:1px;}
+  .isrc{display:block;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px;opacity:.9;}
+  .irm{margin-left:auto;background:transparent;border:none;color:var(--faint);cursor:pointer;font-size:13px;flex:none;padding:0 2px;line-height:1;}
+  .irm:hover{color:#ff6b5e;}
+
+  .cblocks{display:flex;flex-direction:column;gap:14px;}
+  .cblock{background:var(--surface);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden;}
+  .cblock::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);}
+  .cbhead{display:flex;align-items:center;gap:10px;padding:14px 18px 10px 20px;border-bottom:1px solid var(--line);}
+  .cbhead h2{font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em;}
+  .cbtag{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);
+    border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));background:color-mix(in srgb,var(--accent) 12%,transparent);
+    border-radius:999px;padding:2px 8px;}
+  .cbn{margin-left:auto;font-size:11px;font-weight:700;color:var(--faint);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:999px;padding:1px 9px;}
+  .ctasks{padding:10px 18px 14px;display:flex;flex-direction:column;gap:8px;min-height:14px;}
+  .ctask{display:flex;align-items:flex-start;gap:11px;background:var(--surface-2);border:1px solid var(--line);
+    border-left:3px solid var(--accent);border-radius:10px;padding:11px 13px;}
+  .ctbody{flex:1;min-width:0;}
+  .ctt{font-size:14px;font-weight:600;color:var(--text);line-height:1.35;}
+  .ctn{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .cstatus{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--sc);
+    border:1px solid var(--sc);border-radius:999px;padding:2px 9px;flex:none;white-space:nowrap;margin-top:1px;
+    background:color-mix(in srgb,var(--sc) 12%,transparent);}
+  .drag{cursor:grab;color:var(--faint);font-size:15px;flex:none;line-height:1.3;user-select:none;padding:0 2px;}
+  .drag:hover{color:var(--text);}.drag:active{cursor:grabbing;}
+  .bdrag{margin-top:1px;}
+  .sortable-ghost{opacity:.35;}.sortable-chosen{box-shadow:var(--shadow);}
+  .empty{color:var(--muted);}
+
+  .rows{margin-top:6px;display:flex;flex-direction:column;gap:10px;}
+  .prow{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;position:relative;transition:.15s;}
+  .prow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);}
+  .prow:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--line));}
+  .psum{display:grid;grid-template-columns:180px 1fr auto 22px;align-items:center;gap:16px;padding:16px 18px 16px 22px;}
+  @media(max-width:720px){.psum{grid-template-columns:1fr auto 22px;}.pfocus{grid-column:1/-1;order:3;}}
+  .pname{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px;}
+  .pname .pn{font-size:11px;font-weight:700;color:var(--faint);background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:1px 8px;}
+  .pfocus{display:flex;align-items:center;gap:9px;min-width:0;font-size:14px;}
+  .fdot{font-size:13px;flex:none;}.fdot.on{color:#3fb950;}.fdot.off{color:var(--faint);}.fdot.wait{color:#ffab40;}
+  .ftext{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.ftext.muted{color:var(--muted);}
+  .more{color:var(--faint);font-size:12px;flex:none;}
+  .who{font-size:11px;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));
+    background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:999px;padding:1px 8px;flex:none;white-space:nowrap;}
+  .pcount{font-size:12.5px;color:var(--muted);white-space:nowrap;flex:none;}
+  .pchevron{font-size:20px;color:var(--faint);transition:transform .2s;text-align:center;}
+  .prow.open .pchevron{transform:rotate(90deg);}
+  .pdetail{max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0 22px;}
+  .prow.open .pdetail{max-height:1600px;padding:2px 22px 18px;}
+  .dlabel{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-weight:700;margin:14px 0 8px;}
+  .dlabel.muted{opacity:.6;}.dlabel .hint{text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint);opacity:.8;}
+  .qitem{display:flex;align-items:center;gap:11px;padding:7px 0 7px 12px;font-size:13.5px;border-left:2.5px solid var(--pc,#39424f);margin-bottom:2px;}
+  .qitem.wait{border-left-color:#4a4636;opacity:.9;}
+  .qn{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--muted);min-width:16px;text-align:center;flex:none;}
+  .qn.dot{color:#3fb950;}.qn.pause{color:#ffab40;}
+  .qt{color:var(--text);flex:1;min-width:0;}
+  .ptag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--pc);border:1px solid var(--pc);border-radius:999px;padding:1px 7px;flex:none;opacity:.9;}
+  .reason{font-size:11.5px;color:#c9a24a;flex:none;}
+  footer{margin-top:30px;color:var(--faint);font-size:12px;text-align:center;}
+  footer .draft{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 12px;color:var(--muted);}
+
+  /* ── Exportar PDF: la página ÍNTEGRA en una sola hoja vertical (misma estética) ── */
+  body.pdf-measure{ padding:0 !important; }
+  body.pdf-measure #panel-auto{ display:none !important; }   /* solo la pestaña activa */
+  body.pdf-measure #panel-curated{ display:block !important; }
+  body.pdf-measure .wrap{ width:1180px !important; max-width:1180px !important; margin:0 auto !important; padding:40px 44px !important; }
+  /* anchos FIJOS: en print el flex:1 de leftcol colapsaría a 0 y solo se vería la derecha */
+  body.pdf-measure .worktop{ flex-direction:row !important; align-items:flex-start !important; width:1092px !important; gap:18px !important; }
+  body.pdf-measure .leftcol{ flex:0 0 734px !important; width:734px !important; min-width:734px !important; }
+  body.pdf-measure .rightcol{ position:static !important; flex:0 0 340px !important; width:340px !important; max-height:none !important; overflow:visible !important; }
+  @media print{
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    @page{ margin:0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Alejandro · área de ventas</div>
+  <h1>Mis proyectos</h1>
+  <p class="sub">Frentes actuales agrupados por quién los pide. Arrastra bloques y tareas para reordenar.</p>
+  <div class="meta-row">
+    <span><b>7</b> bloques</span>
+    <span><b>14</b> tareas</span>
+    <span>Actualizado 2026-07-02</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="curated">Mis proyectos</button>
+    <button class="tab" data-tab="auto">Vault (auto)</button>
+  </div>
+
+  <div class="panel on" id="panel-curated">
+    <div class="hint-bar">
+      <span>Arrastra <b>⠇</b> para reordenar bloques y tareas · el orden se guarda en este navegador</span>
+      <button class="reset" type="button" onclick="exportMarkdown()">⬇ Exportar Markdown</button>
+      <button class="reset" type="button" onclick="exportPDF()">⬇ Exportar PDF</button>
+      <button class="reset" type="button" onclick="resetOrder()">Reiniciar orden</button>
+    </div>
+  <div class="worktop">
+    <div class="leftcol">
+    <div class="cblocks" id="cblocks">
+    <section class="cblock" data-block-id="maria" style="--accent:#5b8cff">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Maria</h2>
+        <span class="cbn">4</span>
+      </div>
+      <div class="ctasks" data-block="maria">
+        <div class="ctask" data-task-id="maria--plan-para-exceso-de-minutos" data-block="maria" data-blockname="Maria" style="--accent:#5b8cff">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Plan para exceso de minutos</div>
+            <div class="ctn">Trazar plan tras la meet con Sergio y Maria. Incluye: envío automático de correos (similar a QDQ), análisis de los negocios que han sobrepasado su tarifa, health score de satisfacción de servicio por negocio, plan de actuación por tipología de cliente, y decidir qué equipo hace la comunicación con los clientes.</div>
+          </div>
+          <span class="cstatus" style="--sc:#9a7ad6">por plantear</span>
+        </div>
+        <div class="ctask" data-task-id="maria--correcci-n-de-datos-de-billing" data-block="maria" data-blockname="Maria" style="--accent:#5b8cff">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Corrección de datos de billing</div>
+            <div class="ctn">Tras la revisión de datos de Maria quedan negocios pendientes de corregir (algunos no pagan por trato con ellos o son family &amp; friends). Acabar el análisis y la corrección de status que vengo haciendo con ella.</div>
+          </div>
+          <span class="cstatus" style="--sc:#3fb950">en curso</span>
+        </div>
+        <div class="ctask" data-task-id="maria--health-score-v1-en-el-crm" data-block="maria" data-blockname="Maria" style="--accent:#5b8cff">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Health Score V1 en el CRM</div>
+            <div class="ctn">Primera versión implementada hoy, por ahora en el detalle de las cuentas. Maria está verificando que esté ok. Una vez validado se pasará a la pantalla de retention.</div>
+          </div>
+          <span class="cstatus" style="--sc:#3fb950">validando</span>
+        </div>
+        <div class="ctask" data-task-id="maria--aviso-de-suscripci-n-de-stripe-cancelada" data-block="maria" data-blockname="Maria" style="--accent:#5b8cff">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Aviso de suscripción de Stripe cancelada</div>
+            <div class="ctn">Avisar por Slack cuando una suscripción se cancele desde Stripe.</div>
+          </div>
+          <span class="cstatus" style="--sc:#6b7686">por empezar</span>
+        </div>
+      </div>
+    </section>
+    <section class="cblock" data-block-id="giancarlo" style="--accent:#25d366">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Giancarlo</h2>
+        <span class="cbn">1</span>
+      </div>
+      <div class="ctasks" data-block="giancarlo">
+        <div class="ctask" data-task-id="giancarlo--ui-de-nuevo-estado-por-business" data-block="giancarlo" data-blockname="Giancarlo" style="--accent:#25d366">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">UI de nuevo estado por business</div>
+            <div class="ctn">El estado se había cambiado a nivel de base de datos pero no en la UI. Desplegados cambios en diga_core y en el CRM. Falta una PR por desplegar en el CRM.</div>
+          </div>
+          <span class="cstatus" style="--sc:#5b8cff">casi</span>
+        </div>
+      </div>
+    </section>
+    <section class="cblock" data-block-id="sol" style="--accent:#ff9f43">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Sol</h2>
+        <span class="cbn">2</span>
+      </div>
+      <div class="ctasks" data-block="sol">
+        <div class="ctask" data-task-id="sol--form-de-leads-para-dunasoft" data-block="sol" data-blockname="Sol" style="--accent:#ff9f43">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Form de leads para Dunasoft</div>
+            <div class="ctn">Form para que la gente de Dunasoft nos envíe leads directos. Incluye la info normal de lead + el token de Dunasoft para su uso durante el onboarding. Debe volcar también a un Gsheet para que Dunasoft revise los que entran.</div>
+          </div>
+          <span class="cstatus" style="--sc:#ff6b5e">urgente</span>
+        </div>
+        <div class="ctask" data-task-id="sol--instrucciones-de-integraci-n-para-partners-exter" data-block="sol" data-blockname="Sol" style="--accent:#ff9f43">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Instrucciones de integración para partners externos</div>
+            <div class="ctn">Instrucciones para pasar a partners externos sobre cómo integrar el agente de voz de demo y la llamada al webhook para insertar leads. PR a medias.</div>
+          </div>
+          <span class="cstatus" style="--sc:#3fb950">en curso</span>
+        </div>
+      </div>
+    </section>
+    <section class="cblock" data-block-id="sergio-kai" style="--accent:#c084fc">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Sergio / Kai</h2>
+        <span class="cbn">1</span>
+      </div>
+      <div class="ctasks" data-block="sergio-kai">
+        <div class="ctask" data-task-id="sergio-kai--tabla-de-invoicing-desacoplada-de-stripe" data-block="sergio-kai" data-blockname="Sergio / Kai" style="--accent:#c084fc">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Tabla de invoicing desacoplada de Stripe</div>
+            <div class="ctn">Tener en nuestra base de datos las devoluciones de pagos de clientes (suceden con cierta frecuencia por onboardings prolongados). Con esa tabla tendremos tanto la info de devoluciones efectuadas en Stripe como la fecha de próximo pago.</div>
+          </div>
+          <span class="cstatus" style="--sc:#ffab40">importante</span>
+        </div>
+      </div>
+    </section>
+    <section class="cblock" data-block-id="zafra" style="--accent:#f472b6">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Zafra</h2>
+        <span class="cbn">1</span>
+      </div>
+      <div class="ctasks" data-block="zafra">
+        <div class="ctask" data-task-id="zafra--historial-de-consumo-por-cliente" data-block="zafra" data-blockname="Zafra" style="--accent:#f472b6">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Historial de consumo por cliente</div>
+            <div class="ctn">Actualmente mostramos solo el mes actual de consumo; se solicita una tabla con todo el historial de consumo de los clientes. No se ha comenzado la tarea.</div>
+          </div>
+          <span class="cstatus" style="--sc:#6b7686">por empezar</span>
+        </div>
+      </div>
+    </section>
+    <section class="cblock" data-block-id="propio" style="--accent:#2dd4bf">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Propio</h2>
+        <span class="cbn">2</span>
+      </div>
+      <div class="ctasks" data-block="propio">
+        <div class="ctask" data-task-id="propio--fetch-almacenado-recurrente-de-datos-de-diga-cor" data-block="propio" data-blockname="Propio" style="--accent:#2dd4bf">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Fetch + almacenado recurrente de datos de diga_core</div>
+            <div class="ctn">Hoy hacemos fetch por API de todos los datos de diga_core en vivo al usar el CRM. Crear sitio en nuestro schema + cron jobs para fetchear y almacenar: consumo de llamadas, calidad de llamadas, cálculo de Health Score y datos de Stripe. Plantear cómo automatizar el fetch y almacenado recurrente.</div>
+          </div>
+          <span class="cstatus" style="--sc:#9a7ad6">por plantear</span>
+        </div>
+        <div class="ctask" data-task-id="propio--cambio-peque-o-de-stripe-direcci-n-obligatoria-a" data-block="propio" data-blockname="Propio" style="--accent:#2dd4bf">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Cambio pequeño de Stripe — dirección obligatoria al pagar</div>
+            <div class="ctn">Obligar la dirección cuando un cliente va a pagar, para que la factura le llegue en el idioma correcto. Importante para los clientes de Italia.</div>
+          </div>
+          <span class="cstatus" style="--sc:#6b7686">por empezar</span>
+        </div>
+      </div>
+    </section>
+    <section class="cblock" data-block-id="simone" style="--accent:#a78bfa">
+      <div class="cbhead">
+        <span class="drag bdrag" title="Arrastrar bloque">⠇</span>
+        <h2>Simone</h2><span class="cbtag">CRM</span>
+        <span class="cbn">3</span>
+      </div>
+      <div class="ctasks" data-block="simone">
+        <div class="ctask" data-task-id="simone--meter-info-restante-de-leads-en-metadata" data-block="simone" data-blockname="Simone" style="--accent:#a78bfa">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Meter info restante de leads en metadata</div>
+            <div class="ctn">Cada vez que entre un lead en la base de datos, añadir toda la info restante en metadata.</div>
+          </div>
+          <span class="cstatus" style="--sc:#6b7686">por empezar</span>
+        </div>
+        <div class="ctask" data-task-id="simone--corregir-filtros-de-las-tablas" data-block="simone" data-blockname="Simone" style="--accent:#a78bfa">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Corregir filtros de las tablas</div>
+            
+          </div>
+          <span class="cstatus" style="--sc:#6b7686">por empezar</span>
+        </div>
+        <div class="ctask" data-task-id="simone--automation-de-creaci-n-de-cita-demo-por-agente-d" data-block="simone" data-blockname="Simone" style="--accent:#a78bfa">
+          <span class="drag tdrag" title="Arrastrar tarea">⠇</span>
+          <div class="ctbody">
+            <div class="ctt">Automation de creación de cita demo por agente de voz</div>
+            <div class="ctn">Plantear la automation de creación de cita demo mediante el agente de voz.</div>
+          </div>
+          <span class="cstatus" style="--sc:#9a7ad6">por plantear</span>
+        </div>
+      </div>
+    </section>
+    </div>
+    </div>
+    <aside class="rightcol">
+      <div class="implhead"><span>Orden de implementación</span><button class="reset" type="button" onclick="resetImpl()">Vaciar</button></div>
+      <div class="impl" id="implist"></div>
+      <div class="implempty">Arrastra tareas aquí desde la izquierda para fijar el orden de implementación entre proyectos. Se <b>copian</b> (siguen en su bloque).</div>
+    </aside>
+  </div>
+  </div>
+
+  <div class="panel" id="panel-auto">
+    <div class="hint-bar">Foto autogenerada del vault · 9 proyectos · 14 en curso · orden = prioridad</div>
+  <div class="rows">
+  <div class="prow" style="--accent:#25d366" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">CRM<span class="pn">34</span></div>
+      <div class="pfocus"><span class="fdot on">&#9679;</span><span class="ftext">Revisar que el staging del CRM funciona correctamente</span><span class="who">pidió Fernando</span> <span class="more">+10 más en curso</span></div>
+      <div class="pcount">22 en cola · 1 en espera</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Ahora</div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Revisar que el staging del CRM funciona correctamente</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span><span class="who">pidió Fernando</span>
+      </div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Resumen de los 2 puntos por los que 9Bureau puede empezar a desarrollar en el CRM</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Limpiar leads en el CRM para Simone</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span><span class="who">pidió Simone</span>
+      </div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">E2E suite — fix Playwright/Lightpanda harness and complete missing coverage</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">React Doctor — raise score from 33 (Critical) to healthy, fix all findings</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Crear report de funnel de oportunidades (lead → opportunity → account, con tracking de demos)</span>
+        <span class="who">pidió Giancarlo</span>
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Tag accounts from integrations as &#x27;integraciones&#x27; instead of &#x27;Nativo&#x27;</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Fix plan name not persisting when saved on Opportunity</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Linkar business de diga_core a una Account desde el detalle de cuenta</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Backfill canonical LEAD_CREATED pipeline event (enum + migration)</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Add &#x27;Agile Hair&#x27; to available tools/equipment catalog</span>
+        
+      </div>
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn">1</span>
+        <span class="qt">Arrancar el confirmador de citas de comerciales y onboarders</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn">2</span>
+        <span class="qt">Revisar los datos de Stripe en el report de cuentas por fuente del CRM</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span><span class="who">pidió Sergio Espeja</span>
+      </div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn">3</span>
+        <span class="qt">Crear report de onboarding para Giancarlo en el CRM</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span><span class="who">pidió Giancarlo</span>
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">4</span>
+        <span class="qt">Plantear desarrollo de multi-location — convertir un lead en varias locations</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">5</span>
+        <span class="qt">Require business selection when closing deals in CRM</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">6</span>
+        <span class="qt">Add 5-minute pre-event notifications for calendar events</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">7</span>
+        <span class="qt">Fix 504 gateway timeout error when creating new reports</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">8</span>
+        <span class="qt">Fix phone number formatting for Weelko residual traffic leads</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">9</span>
+        <span class="qt">Add date range filters and report duplication to all reports</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">10</span>
+        <span class="qt">Add folders to organize reports with creator and visibility metadata</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">11</span>
+        <span class="qt">Add city field to leads and independent view preferences per section</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">12</span>
+        <span class="qt">Add &#x27;Customer informed&#x27; checklist and &#x27;Planned launch date&#x27; to &#x27;Listo para avanzar&#x27; status</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">13</span>
+        <span class="qt">Add local storage persistence for page filters across sessions</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">14</span>
+        <span class="qt">Add direct link from CRM account to digalook admin business view</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">15</span>
+        <span class="qt">Add key milestone date fields to opportunity and onboarding tracking</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">16</span>
+        <span class="qt">Enable account reassignment between agents</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">17</span>
+        <span class="qt">Add &#x27;Not Interested&#x27; stage for Leads to avoid unnecessary Opportunity conversion</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">18</span>
+        <span class="qt">Add task-specific reminders separate from general notification bell</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">19</span>
+        <span class="qt">Fix public report &#x27;Account split by type of integration&#x27; showing no breakdown</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">20</span>
+        <span class="qt">Fix automatic merge failing for duplicates with same Source</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">21</span>
+        <span class="qt">Consolidate notifications &amp; reminders into unified bottom-left panel</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">22</span>
+        <span class="qt">Activity types in CRM — Llamada / Email / WhatsApp / comentario interno</span>
+        
+      </div>
+      <div class="dlabel">En espera</div>
+      <div class="qitem wait">
+        <span class="qn pause">&#9208;</span>
+        <span class="qt">Weelko integration request - needs clarification</span>
+        <span class="reason">espera a Joan Puche</span>
+        
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#ff9f43" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Pagos / Stripe<span class="pn">3</span></div>
+      <div class="pfocus"><span class="fdot on">&#9679;</span><span class="ftext">Preparar documentación para reunión de billing con Fernando y Joan</span> <span class="more">+1 más en curso</span></div>
+      <div class="pcount">1 en cola</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Ahora</div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Preparar documentación para reunión de billing con Fernando y Joan</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Revisar y corregir negocios duplicados en Stripe (encontrar y arreglar el bug)</span>
+        
+      </div>
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn">1</span>
+        <span class="qt">Finalizar la regularización del IVA en facturas antiguas (coordinación con DigaLook y MAR)</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span><span class="who">pidió Giancarlo</span>
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#c084fc" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Core<span class="pn">3</span></div>
+      <div class="pfocus"><span class="fdot on">&#9679;</span><span class="ftext">Magic link onboarding targets the wrong business for multi-business users</span></div>
+      <div class="pcount">1 en cola · 1 después</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Ahora</div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Magic link onboarding targets the wrong business for multi-business users</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#39424f">
+        <span class="qn">1</span>
+        <span class="qt">Make backfillOneTimeLinesForCustomer count lines actually written</span>
+        
+      </div>
+      <div class="dlabel muted">Más adelante</div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Invoices data model — invoices + invoice_lines + payment status</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#5b8cff" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Lifecycle &amp; Billing<span class="pn">10</span></div>
+      <div class="pfocus"><span class="fdot off">&#9675;</span><span class="ftext muted">nada activo ahora</span></div>
+      <div class="pcount">6 en cola · 3 en espera · 1 después</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn">1</span>
+        <span class="qt">Fast-track — estado real de Stripe en la DB (multi-item + paused)</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span>
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">2</span>
+        <span class="qt">Backfill de catálogo (price.metadata.minutes_per_unit)</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">3</span>
+        <span class="qt">Forzar dirección + dashboards</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">4</span>
+        <span class="qt">Drop de columnas deprecadas + docs</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">5</span>
+        <span class="qt">Migrar lectores de is_internal → business_type + drop</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#39424f">
+        <span class="qn">6</span>
+        <span class="qt">Resolver customer Stripe huérfano cus_UXTOw8xohwxr1F (Zayda Troya)</span>
+        
+      </div>
+      <div class="dlabel">En espera</div>
+      <div class="qitem wait">
+        <span class="qn pause">&#9208;</span>
+        <span class="qt">Backfill de metadata para las 7 subs con metadata vacía</span>
+        <span class="reason">bloqueada por otra tarea en curso</span>
+        
+      </div>
+      <div class="qitem wait">
+        <span class="qn pause">&#9208;</span>
+        <span class="qt">Tabla invoice + 5 métricas de MRR + handler de minutes_pooled</span>
+        <span class="reason">bloqueada por otra tarea en curso</span>
+        
+      </div>
+      <div class="qitem wait">
+        <span class="qn pause">&#9208;</span>
+        <span class="qt">Quitar sync de Stripe + isTest → type</span>
+        <span class="reason">bloqueada por otra tarea en curso</span>
+        
+      </div>
+      <div class="dlabel muted">Más adelante</div>
+      <div class="qitem" style="--pc:#39424f">
+        <span class="qn dot">&#9679;</span>
+        <span class="qt">Data quality fixes (diferida)</span>
+        
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#a78bfa" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Landings<span class="pn">2</span></div>
+      <div class="pfocus"><span class="fdot off">&#9675;</span><span class="ftext muted">nada activo ahora</span></div>
+      <div class="pcount">2 en cola</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">1</span>
+        <span class="qt">Revisar error reportado por Aleksandra</span>
+        <span class="who">pidió Aleksandra</span>
+      </div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">2</span>
+        <span class="qt">Desglosar roadmap para migrar agentes de voz de landings de ElevenLabs a infra HeyDiga</span>
+        <span class="who">pidió Zafra</span>
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#94a3b8" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Extras<span class="pn">3</span></div>
+      <div class="pfocus"><span class="fdot off">&#9675;</span><span class="ftext muted">nada activo ahora</span></div>
+      <div class="pcount">3 en cola</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#4a5568">
+        <span class="qn">1</span>
+        <span class="qt">Configurar Tabularis en GCP para acceder vía MCP local a la DB del CRM</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#39424f">
+        <span class="qn">2</span>
+        <span class="qt">Responder a Cala con mi skill de su producto</span>
+        
+      </div>
+      <div class="qitem" style="--pc:#39424f">
+        <span class="qn">3</span>
+        <span class="qt">Limpiar PRs antiguas de GitHub</span>
+        
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#38bdf8" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Agentes de voz<span class="pn">1</span></div>
+      <div class="pfocus"><span class="fdot off">&#9675;</span><span class="ftext muted">nada activo ahora</span></div>
+      <div class="pcount">1 en cola</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#ffab40">
+        <span class="qn">1</span>
+        <span class="qt">Actualizar agentes con nuevo script de inicialización automática de crons</span>
+        <span class="ptag" style="--pc:#ffab40">alta</span><span class="who">pidió Saul</span>
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#e879f9" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Arganour<span class="pn">1</span></div>
+      <div class="pfocus"><span class="fdot off">&#9675;</span><span class="ftext muted">nada activo ahora</span></div>
+      <div class="pcount">1 en cola</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">Lo siguiente <span class="hint">(en orden)</span></div>
+      <div class="qitem" style="--pc:#39424f">
+        <span class="qn">1</span>
+        <span class="qt">Decidir y responder al correo de Raquel del 11-may (cierre del feedback + cómo proceder)</span>
+        
+      </div>
+    </div>
+  </div>
+  <div class="prow" style="--accent:#f472b6" onclick="this.classList.toggle('open')">
+    <div class="psum">
+      <div class="pname">Gracias Paco<span class="pn">1</span></div>
+      <div class="pfocus"><span class="fdot wait">&#9208;</span><span class="ftext muted">en espera &mdash; espera a Gracias Paco — feedback sobre otra tarea (incidencias) antes de continuar con TGS</span></div>
+      <div class="pcount">1 en espera</div>
+      <div class="pchevron">&#8250;</div>
+    </div>
+    <div class="pdetail">
+      <div class="dlabel">En espera</div>
+      <div class="qitem wait">
+        <span class="qn pause">&#9208;</span>
+        <span class="qt">Cambio de comportamiento de Aurora para Toledo, Guadalajara y Segovia</span>
+        <span class="reason">espera a Gracias Paco — feedback sobre otra tarea (incidencias) antes de continuar con TGS</span>
+        
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+
+  <footer><span class="draft">Vista del sistema de tareas · pestaña 1 curada · pestaña 2 en vivo</span></footer>
+</div>
+
+<script src="https://unpkg.com/sortablejs@1.15.2/Sortable.min.js"></script>
+<script>
+const LS_KEY = 'roadmap-order-v3';
+function loadOrder(){ try{return JSON.parse(localStorage.getItem(LS_KEY))||{}}catch(e){return {}} }
+function saveOrder(o){ localStorage.setItem(LS_KEY, JSON.stringify(o)); }
+
+function implEl(){ return document.getElementById('implist'); }
+
+function currentOrder(){
+  const root = document.getElementById('cblocks'); const out = {};
+  if(root){
+    out.blocks = [...root.querySelectorAll('.cblock')].map(b=>b.dataset.blockId);
+    out.tasks = {};
+    root.querySelectorAll('.cblock').forEach(b=>{
+      out.tasks[b.dataset.blockId] = [...b.querySelectorAll('.ctask')].map(t=>t.dataset.taskId);
+    });
+  }
+  const il = implEl();
+  out.impl = il ? [...il.querySelectorAll('.ctask')].map(t=>t.dataset.taskId) : [];
+  return out;
+}
+function persist(){ saveOrder(currentOrder()); }
+
+// ── cola de implementación ──
+function renumber(){
+  const il = implEl(); if(!il) return;
+  [...il.querySelectorAll('.ctask')].forEach((n,i)=>{
+    const num = n.querySelector('.inum'); if(num) num.textContent = (i+1);
+  });
+}
+function decorateImpl(node){
+  node.classList.add('iitem');
+  if(!node.querySelector('.inum')){
+    const num = document.createElement('span'); num.className = 'inum';
+    node.insertBefore(num, node.firstChild);
+  }
+  const body = node.querySelector('.ctbody');
+  if(body && !body.querySelector('.isrc')){
+    const s = document.createElement('span'); s.className = 'isrc';
+    s.style.color = 'var(--accent)'; s.textContent = node.dataset.blockname || '';
+    body.insertBefore(s, body.firstChild);
+  }
+  if(!node.querySelector('.irm')){
+    const rm = document.createElement('button'); rm.type='button'; rm.className='irm'; rm.textContent='✕';
+    rm.title = 'Quitar de la cola';
+    rm.addEventListener('click', function(e){ e.stopPropagation(); node.remove(); renumber(); persist(); });
+    node.appendChild(rm);
+  }
+}
+function addToImpl(id){
+  const il = implEl(); if(!il) return;
+  if(il.querySelector('.ctask[data-task-id="'+id+'"]')) return;   // ya está
+  const src = document.querySelector('.leftcol .ctask[data-task-id="'+id+'"]'); if(!src) return;
+  const c = src.cloneNode(true);
+  il.appendChild(c); decorateImpl(c);
+}
+function resetImpl(){ const il=implEl(); if(il) il.innerHTML=''; renumber(); persist(); }
+
+function applyOrder(){
+  const o = loadOrder(); const root = document.getElementById('cblocks');
+  if(root && o.blocks){
+    o.blocks.forEach(id=>{ const el=root.querySelector('.cblock[data-block-id="'+id+'"]'); if(el) root.appendChild(el); });
+    if(o.tasks){ Object.entries(o.tasks).forEach(([bid,ids])=>{
+      const cont = root.querySelector('.ctasks[data-block="'+bid+'"]'); if(!cont) return;
+      ids.forEach(tid=>{ const t=cont.querySelector('.ctask[data-task-id="'+tid+'"]'); if(t) cont.appendChild(t); });
+    }); }
+  }
+  if(o.impl){ o.impl.forEach(addToImpl); }
+  renumber();
+}
+function resetOrder(){ localStorage.removeItem(LS_KEY); location.reload(); }
+
+function exportMarkdown(){
+  const txt = function(el){ return el ? el.textContent.trim() : ''; };
+  const d = new Date().toISOString().slice(0,10);
+  const L = ['# Mis proyectos', '', '_Exportado ' + d + '_', ''];
+
+  // Orden de implementación (la cola de la derecha), tal cual esté ahora
+  const il = implEl();
+  const items = il ? [...il.querySelectorAll('.ctask')] : [];
+  if(items.length){
+    L.push('## Orden de implementación', '');
+    items.forEach(function(n,i){
+      const t = txt(n.querySelector('.ctt'));
+      const src = n.dataset.blockname || '';
+      const st = txt(n.querySelector('.cstatus'));
+      L.push((i+1) + '. **' + t + '**' + (src ? ' — ' + src : '') + (st ? ' _(' + st + ')_' : ''));
+    });
+    L.push('');
+  }
+
+  // Proyectos y sus tareas, en el orden actual
+  L.push('## Proyectos', '');
+  const root = document.getElementById('cblocks');
+  root.querySelectorAll('.cblock').forEach(function(b){
+    const title = txt(b.querySelector('.cbhead h2'));
+    const tag = txt(b.querySelector('.cbtag'));
+    L.push('### ' + title + (tag ? ' · ' + tag : ''));
+    b.querySelectorAll('.ctask').forEach(function(t){
+      const tt = txt(t.querySelector('.ctt'));
+      const st = txt(t.querySelector('.cstatus'));
+      L.push('- **' + tt + '**' + (st ? ' _(' + st + ')_' : ''));
+      const note = txt(t.querySelector('.ctn'));
+      if(note) L.push('  ' + note.replace(/\s+/g,' '));
+    });
+    L.push('');
+  });
+
+  const blob = new Blob([L.join('\n')], {type:'text/markdown;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mis-proyectos-' + d + '.md';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function exportPDF(){
+  // 1) pestaña curada activa
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  const ct = document.querySelector('.tab[data-tab="curated"]'); if(ct) ct.classList.add('on');
+  const pc = document.getElementById('panel-curated'); if(pc) pc.classList.add('on');
+  // 2) layout fijo de medición (2 columnas, ancho fijo, sin cromo)
+  document.body.classList.add('pdf-measure');
+  const wrap = document.querySelector('.wrap');
+  setTimeout(function(){
+    // 3) mide y fija @page al tamaño EXACTO del contenido → una sola página vertical
+    const w = wrap.offsetWidth, h = wrap.offsetHeight;
+    const mmW = (w * 25.4 / 96).toFixed(1);
+    const mmH = (h * 25.4 / 96 + 2).toFixed(1);
+    let s = document.getElementById('pdf-page');
+    if(!s){ s = document.createElement('style'); s.id = 'pdf-page'; document.head.appendChild(s); }
+    s.textContent = '@page{size:' + mmW + 'mm ' + mmH + 'mm;margin:0}';
+    window.print();
+  }, 60);
+}
+window.addEventListener('afterprint', function(){ document.body.classList.remove('pdf-measure'); });
+
+document.addEventListener('DOMContentLoaded', function(){
+  applyOrder();
+  const root = document.getElementById('cblocks');
+  const il = implEl();
+  var SCROLL = {scroll:true, scrollSensitivity:90, scrollSpeed:16, bubbleScroll:true, forceAutoScrollFallback:true};
+  if(root && window.Sortable){
+    Sortable.create(root, Object.assign({handle:'.bdrag', animation:150, onEnd:persist}, SCROLL));
+    root.querySelectorAll('.ctasks').forEach(function(c){
+      Sortable.create(c, Object.assign({group:{name:'shared', pull:'clone', put:false}, sort:true,
+        handle:'.tdrag', animation:150, onEnd:persist}, SCROLL));
+    });
+  }
+  if(il && window.Sortable){
+    Sortable.create(il, Object.assign({group:{name:'shared', pull:false, put:true}, sort:true,
+      handle:'.tdrag', animation:150,
+      onAdd:function(evt){
+        const item = evt.item; const id = item.dataset.taskId;
+        // dedupe: si ya existía, descarta el nuevo clon
+        if(il.querySelectorAll('.ctask[data-task-id="'+id+'"]').length > 1){
+          item.remove(); renumber(); return;
+        }
+        decorateImpl(item); renumber(); persist();
+      },
+      onSort:function(){ renumber(); persist(); }
+    }, SCROLL));
+  }
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('panel-'+tab.dataset.tab).classList.add('on');
+    });
+  });
+});
+</script>
+</body>
+</html>
