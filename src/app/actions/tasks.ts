@@ -244,7 +244,11 @@ export async function queueAdvance(
     .from("impl_queue")
     .update({ archived_at: new Date().toISOString() })
     .eq("id", entryId);
-  if (entry) await logActivity(supabase, userId, entry.task_id, "queue_archive");
+  if (entry) {
+    // Al pasar al historial, la tarea sale del tablero general.
+    await supabase.from("tasks").update({ archived: true }).eq("id", entry.task_id);
+    await logActivity(supabase, userId, entry.task_id, "queue_archive");
+  }
   revalidatePath("/");
   revalidatePath("/historial");
   return { stage: "archived" };
@@ -273,7 +277,11 @@ export async function queueRestore(entryId: string) {
       position: (last?.position ?? 0) + 1000,
     })
     .eq("id", entryId);
-  if (entry) await logActivity(supabase, userId, entry.task_id, "queue_restore");
+  if (entry) {
+    // Al restaurar, la tarea vuelve al tablero general.
+    await supabase.from("tasks").update({ archived: false }).eq("id", entry.task_id);
+    await logActivity(supabase, userId, entry.task_id, "queue_restore");
+  }
   revalidatePath("/");
   revalidatePath("/historial");
   return { ok: true };

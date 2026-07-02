@@ -292,7 +292,8 @@ export function BoardView({
       queueRemove(entry.id, entry.task_id).catch(() => {});
   }
 
-  // 1er clic: completa (se queda tachada). 2º clic: pasa al historial.
+  // 1er clic: completa (se queda tachada). 2º clic: pasa al historial
+  // y la tarea desaparece del tablero.
   function advanceQueueItem(entry: QueueEntry) {
     if (!entry.completed_at) {
       setQueue((prev) =>
@@ -304,6 +305,12 @@ export function BoardView({
       );
     } else {
       setQueue((prev) => prev.filter((e) => e.id !== entry.id));
+      setBoard((prev) => {
+        const next: Board = { ventas: [], onboarding: [], retention: [] };
+        for (const p of PHASES)
+          next[p] = prev[p].filter((t) => t.id !== entry.task_id);
+        return next;
+      });
     }
     if (!entry.id.startsWith("tmp-")) queueAdvance(entry.id).catch(() => {});
   }
