@@ -26,9 +26,11 @@ import {
   queueRemove,
   queueReorder,
 } from "@/app/actions/tasks";
+import { toggleImplLike } from "@/app/actions/likes";
 import {
   PHASES,
   type Phase,
+  type Profile,
   type QueueEntry,
   type Task,
 } from "@/lib/types";
@@ -89,16 +91,42 @@ const collisionDetectionStrategy: CollisionDetection = (args) => {
 export function BoardView({
   initialTasks,
   initialQueue,
+  initialLikers,
+  currentUser,
 }: {
   initialTasks: Task[];
   initialQueue: QueueEntry[];
+  initialLikers: Profile[];
+  currentUser: Profile | null;
 }) {
   const [board, setBoard] = useState<Board>(() => group(initialTasks));
   const [queue, setQueue] = useState<QueueEntry[]>(() =>
     [...initialQueue].sort((a, b) => a.position - b.position),
   );
+  const [likers, setLikers] = useState<Profile[]>(() => initialLikers);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [drawer, setDrawer] = useState<Mode | null>(null);
+
+  const likedByMe = currentUser
+    ? likers.some((p) => p.id === currentUser.id)
+    : false;
+
+  function toggleLike() {
+    if (!currentUser) return;
+    const mine = likers.some((p) => p.id === currentUser.id);
+    setLikers((prev) =>
+      mine
+        ? prev.filter((p) => p.id !== currentUser.id)
+        : [...prev, currentUser],
+    );
+    toggleImplLike().catch(() =>
+      setLikers((prev) =>
+        mine
+          ? [...prev, currentUser]
+          : prev.filter((p) => p.id !== currentUser.id),
+      ),
+    );
+  }
 
   const boardRef = useRef(board);
   boardRef.current = board;
@@ -304,7 +332,13 @@ export function BoardView({
               />
             ))}
           </div>
-          <ImplQueue rows={queueRows} onRemove={removeFromQueue} />
+          <ImplQueue
+            rows={queueRows}
+            onRemove={removeFromQueue}
+            likers={likers}
+            likedByMe={likedByMe}
+            onToggleLike={toggleLike}
+          />
         </div>
 
         <DragOverlay>

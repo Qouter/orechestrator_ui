@@ -9,7 +9,7 @@ export default async function Page() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [profileRes, tasksRes, queueRes] = await Promise.all([
+  const [profileRes, tasksRes, queueRes, likesRes] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle(),
     supabase
       .from("tasks")
@@ -20,14 +20,28 @@ export default async function Page() {
       .from("impl_queue")
       .select("*")
       .order("position", { ascending: true }),
+    supabase
+      .from("impl_order_likes")
+      .select("profile:profiles(id, name, avatar_url, email, slack_user_id)")
+      .order("created_at", { ascending: true }),
   ]);
+
+  const profile = (profileRes.data as Profile) ?? null;
+  const likeRows = (likesRes.data ?? []) as unknown as Array<{
+    profile: Profile | Profile[] | null;
+  }>;
+  const likers = likeRows
+    .map((r) => (Array.isArray(r.profile) ? r.profile[0] : r.profile))
+    .filter((p): p is Profile => !!p);
 
   return (
     <div className="app">
-      <Header profile={(profileRes.data as Profile) ?? null} />
+      <Header profile={profile} />
       <BoardView
         initialTasks={(tasksRes.data as Task[]) ?? []}
         initialQueue={(queueRes.data as QueueEntry[]) ?? []}
+        initialLikers={likers}
+        currentUser={profile}
       />
     </div>
   );
