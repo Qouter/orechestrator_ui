@@ -31,9 +31,13 @@ function loadEnv() {
 loadEnv();
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Clave secreta (nueva `sb_secret_…` o la legacy service_role) — salta la RLS.
+const KEY =
+  process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!URL || !KEY) {
-  console.error("Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en .env.local");
+  console.error(
+    "Faltan NEXT_PUBLIC_SUPABASE_URL o SUPABASE_SECRET_KEY (service role) en .env.local",
+  );
   process.exit(1);
 }
 
