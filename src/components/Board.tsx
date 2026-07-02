@@ -7,8 +7,10 @@ import {
   KeyboardSensor,
   PointerSensor,
   closestCorners,
+  pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
@@ -49,6 +51,40 @@ function midpoint(positions: number[], index: number): number {
   if (next == null) return prev + 1000;
   return (prev + next) / 2;
 }
+
+const isQueueId = (id: string | number) =>
+  id === "queue" || String(id).startsWith("q:");
+
+/**
+ * Colisión a medida:
+ * - Arrastrando una tarea: la cola solo cuenta si el puntero está DENTRO de ella;
+ *   si no, se ignora la cola y se resuelve entre columnas (así mover a Retention,
+ *   pegada a la cola, funciona y no encola por accidente).
+ * - Arrastrando un ítem de la cola: solo se consideran la cola y sus ítems.
+ */
+const collisionDetectionStrategy: CollisionDetection = (args) => {
+  const activeId = String(args.active.id);
+
+  if (activeId.startsWith("q:")) {
+    return closestCorners({
+      ...args,
+      droppableContainers: args.droppableContainers.filter((d) =>
+        isQueueId(d.id),
+      ),
+    });
+  }
+
+  const within = pointerWithin(args);
+  const queueHit = within.find((c) => isQueueId(c.id));
+  if (queueHit) return [queueHit];
+
+  return closestCorners({
+    ...args,
+    droppableContainers: args.droppableContainers.filter(
+      (d) => !isQueueId(d.id),
+    ),
+  });
+};
 
 export function BoardView({
   initialTasks,
@@ -249,7 +285,7 @@ export function BoardView({
     <>
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={collisionDetectionStrategy}
         onDragStart={onDragStart}
         onDragOver={onDragOver}
         onDragEnd={onDragEnd}
