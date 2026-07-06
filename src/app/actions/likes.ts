@@ -34,3 +34,27 @@ export async function toggleImplLike(): Promise<{ liked: boolean }> {
   revalidatePath("/");
   return { liked: true };
 }
+
+/** Toggle del like del usuario actual a la sección "Bloques". */
+export async function toggleBlocksLike(): Promise<{ liked: boolean }> {
+  const { supabase, userId } = await requireUser();
+
+  const { data: existing } = await supabase
+    .from("blocks_section_likes")
+    .select("profile_id")
+    .eq("profile_id", userId)
+    .maybeSingle();
+
+  if (existing) {
+    await supabase
+      .from("blocks_section_likes")
+      .delete()
+      .eq("profile_id", userId);
+    revalidatePath("/bloques");
+    return { liked: false };
+  }
+
+  await supabase.from("blocks_section_likes").insert({ profile_id: userId });
+  revalidatePath("/bloques");
+  return { liked: true };
+}

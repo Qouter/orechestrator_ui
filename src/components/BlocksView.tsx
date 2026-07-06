@@ -19,13 +19,16 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { moveBlock } from "@/app/actions/blocks";
+import { toggleBlocksLike } from "@/app/actions/likes";
 import { BlockEditor } from "./BlockEditor";
 import { ComplexityBadge } from "./ComplexityBadge";
+import { LikeBar } from "./LikeBar";
 import {
   PHASE_LABEL,
   PROGRESS_LABEL,
   type Block,
   type Phase,
+  type Profile,
   type Progress,
   type Task,
 } from "@/lib/types";
@@ -56,13 +59,39 @@ type EditorMode = { kind: "new" } | { kind: "edit"; block: Block } | null;
 export function BlocksView({
   initialBlocks,
   tasks,
+  initialLikers,
+  currentUser,
 }: {
   initialBlocks: Block[];
   tasks: Task[];
+  initialLikers: Profile[];
+  currentUser: Profile | null;
 }) {
   const [blocks, setBlocks] = useState<Block[]>(initialBlocks);
   const [editor, setEditor] = useState<EditorMode>(null);
   const [open, setOpen] = useState<Set<string>>(new Set());
+  const [likers, setLikers] = useState<Profile[]>(initialLikers);
+
+  const likedByMe = currentUser
+    ? likers.some((p) => p.id === currentUser.id)
+    : false;
+
+  function toggleLike() {
+    if (!currentUser) return;
+    const mine = likers.some((p) => p.id === currentUser.id);
+    setLikers((prev) =>
+      mine
+        ? prev.filter((p) => p.id !== currentUser.id)
+        : [...prev, currentUser],
+    );
+    toggleBlocksLike().catch(() =>
+      setLikers((prev) =>
+        mine
+          ? [...prev, currentUser]
+          : prev.filter((p) => p.id !== currentUser.id),
+      ),
+    );
+  }
 
   const byBlock = useMemo(() => {
     const m = new Map<string, Task[]>();
@@ -176,6 +205,13 @@ export function BlocksView({
           </div>
         </div>
       )}
+
+      <LikeBar
+        likers={likers}
+        likedByMe={likedByMe}
+        onToggle={toggleLike}
+        label="los bloques"
+      />
 
       {editor && (
         <BlockEditor
