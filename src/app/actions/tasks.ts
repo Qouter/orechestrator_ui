@@ -53,6 +53,7 @@ export interface TaskInput {
   priority?: Priority;
   complexity?: Complexity | null;
   requested_by?: string | null;
+  block_id?: string | null;
 }
 
 export async function createTask(input: TaskInput) {
@@ -79,6 +80,7 @@ export async function createTask(input: TaskInput) {
       priority: input.priority ?? "normal",
       complexity: input.complexity ?? null,
       requested_by: input.requested_by?.trim() || null,
+      block_id: input.block_id ?? null,
       position,
       created_by: userId,
       updated_by: userId,
@@ -100,6 +102,7 @@ const EDITABLE: (keyof TaskInput)[] = [
   "priority",
   "complexity",
   "requested_by",
+  "block_id",
 ];
 
 export async function updateTask(id: string, patch: Partial<TaskInput>) {

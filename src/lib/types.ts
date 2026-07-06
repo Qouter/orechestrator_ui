@@ -48,10 +48,22 @@ export interface Task {
   priority: Priority;
   complexity: Complexity | null;
   requested_by: string | null;
+  block_id: string | null;
   position: number;
   archived: boolean;
   created_by: string | null;
   updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Block {
+  id: string;
+  name: string;
+  color: string;
+  description: string | null;
+  position: number;
+  archived: boolean;
   created_at: string;
   updated_at: string;
 }

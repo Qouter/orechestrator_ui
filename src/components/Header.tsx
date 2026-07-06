@@ -1,7 +1,14 @@
+import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 import type { Profile } from "@/lib/types";
 
-export function Header({ profile }: { profile: Profile | null }) {
+export function Header({
+  profile,
+  active,
+}: {
+  profile: Profile | null;
+  active: "board" | "blocks";
+}) {
   return (
     <header className="topbar">
       <div className="topbar-brand">
@@ -12,6 +19,14 @@ export function Header({ profile }: { profile: Profile | null }) {
         </span>
         Orchestrator
       </div>
+      <nav className="topnav">
+        <Link className={active === "board" ? "on" : ""} href="/">
+          Tablero
+        </Link>
+        <Link className={active === "blocks" ? "on" : ""} href="/bloques">
+          Bloques
+        </Link>
+      </nav>
       <div className="topbar-spacer" />
       <div className="user">
         {profile?.avatar_url ? (

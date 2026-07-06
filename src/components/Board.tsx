@@ -30,6 +30,7 @@ import {
 import { toggleImplLike } from "@/app/actions/likes";
 import {
   PHASES,
+  type Block,
   type Phase,
   type Profile,
   type QueueEntry,
@@ -94,11 +95,13 @@ export function BoardView({
   initialQueue,
   initialLikers,
   currentUser,
+  blocks,
 }: {
   initialTasks: Task[];
   initialQueue: QueueEntry[];
   initialLikers: Profile[];
   currentUser: Profile | null;
+  blocks: Block[];
 }) {
   const [board, setBoard] = useState<Board>(() => group(initialTasks));
   const [queue, setQueue] = useState<QueueEntry[]>(() =>
@@ -388,6 +391,7 @@ export function BoardView({
       {drawer && (
         <TaskDrawer
           mode={drawer}
+          blocks={blocks}
           onClose={() => setDrawer(null)}
           onSaved={upsertTask}
           onDeleted={removeTask}

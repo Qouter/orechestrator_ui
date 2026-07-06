@@ -15,6 +15,7 @@ import {
   PRIORITY_LABEL,
   PROGRESS_LABEL,
   type Activity,
+  type Block,
   type Complexity,
   type Phase,
   type Priority,
@@ -32,11 +33,13 @@ const COMPLEXITIES: Complexity[] = ["S", "M", "L", "XL"];
 
 export function TaskDrawer({
   mode,
+  blocks,
   onClose,
   onSaved,
   onDeleted,
 }: {
   mode: Mode;
+  blocks: Block[];
   onClose: () => void;
   onSaved: (t: Task) => void;
   onDeleted: (id: string) => void;
@@ -58,6 +61,9 @@ export function TaskDrawer({
     editing?.complexity ?? null,
   );
   const [requestedBy, setRequestedBy] = useState(editing?.requested_by ?? "");
+  const [blockId, setBlockId] = useState<string | null>(
+    editing?.block_id ?? null,
+  );
   const [pending, startTransition] = useTransition();
   const [activity, setActivity] = useState<Activity[] | null>(null);
 
@@ -87,6 +93,7 @@ export function TaskDrawer({
       priority,
       complexity,
       requested_by: requestedBy,
+      block_id: blockId,
     };
     startTransition(async () => {
       const saved = editing
@@ -194,6 +201,23 @@ export function TaskDrawer({
               onChange={(e) => setRequestedBy(e.target.value)}
               placeholder="Maria, Giancarlo, Sol…"
             />
+          </div>
+
+          <div className="field">
+            <label htmlFor="t-block">Bloque</label>
+            <select
+              id="t-block"
+              className="select"
+              value={blockId ?? ""}
+              onChange={(e) => setBlockId(e.target.value || null)}
+            >
+              <option value="">— Sin bloque —</option>
+              {blocks.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {editing && (

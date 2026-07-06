@@ -748,6 +748,232 @@ p {
   background: var(--panel);
 }
 
+/* ── Nav (switcher Tablero / Bloques) ───────────────────────────────────── */
+.topnav {
+  display: flex;
+  gap: 2px;
+  margin-left: 14px;
+}
+.topnav a {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--r-control);
+  transition: color 0.15s ease-out, background 0.15s ease-out;
+}
+.topnav a:hover {
+  color: var(--ink);
+  background: var(--panel);
+}
+.topnav a.on {
+  color: var(--ink);
+  background: var(--panel-2);
+  font-weight: 600;
+}
+
+/* ── Vista de bloques ───────────────────────────────────────────────────── */
+.blocks {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 24px 64px;
+  width: 100%;
+}
+.blocks-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.blocks-head h1 {
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.blocks-head .btn {
+  margin-left: auto;
+  align-self: center;
+}
+.blocks-sub {
+  color: var(--ink-muted);
+  font-size: var(--t-md);
+  margin: 0 0 20px;
+}
+.block-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bcard {
+  background: var(--surface);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.bcard-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  cursor: pointer;
+}
+.bgrip {
+  color: var(--ink-faint);
+  cursor: grab;
+  flex: none;
+  line-height: 0;
+  touch-action: none;
+}
+.bgrip:hover {
+  color: var(--ink-muted);
+}
+.bnum {
+  font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+  font-size: var(--t-sm);
+  color: var(--ink-faint);
+  min-width: 18px;
+  text-align: center;
+  flex: none;
+}
+.bdot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  flex: none;
+}
+.bname {
+  font-size: var(--t-md);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bprog {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: none;
+}
+.bprog-track {
+  width: 120px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.bprog-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+.bprog-label {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bedit {
+  flex: none;
+}
+.bchev {
+  font-size: 18px;
+  color: var(--ink-faint);
+  transition: transform 0.2s;
+  flex: none;
+}
+.bcard.open .bchev {
+  transform: rotate(90deg);
+}
+.bmeta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 15px 12px 56px;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+.bmeta .ph {
+  font-weight: 600;
+}
+.btasks {
+  border-top: 1px solid var(--line);
+  padding: 8px 15px 12px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.btask-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: var(--t-sm);
+  border-bottom: 1px solid var(--line);
+}
+.btask-row:last-child {
+  border-bottom: none;
+}
+.btask-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.btask-title.done {
+  color: var(--ink-faint);
+  text-decoration: line-through;
+}
+.btask-empty {
+  color: var(--ink-faint);
+  font-size: var(--t-sm);
+  padding: 6px 0;
+}
+.blocks-empty {
+  text-align: center;
+  color: var(--ink-muted);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-card);
+  padding: 40px 24px;
+  line-height: 1.5;
+}
+.blocks-empty b {
+  color: var(--ink);
+  display: block;
+  font-size: var(--t-lg);
+  margin-bottom: 4px;
+}
+.unassigned {
+  margin-top: 22px;
+}
+.unassigned h2 {
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+.swatches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.swatch.on {
+  border-color: var(--ink);
+}
+
 /* ── Historial ──────────────────────────────────────────────────────────── */
 .hist {
   max-width: 760px;
