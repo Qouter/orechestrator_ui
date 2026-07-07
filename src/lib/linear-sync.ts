@@ -61,20 +61,20 @@ export async function performSync(supabase: SupabaseClient) {
   for (const t of linked ?? []) {
     const n = byId.get(t.linear_id as string);
     if (!n) continue;
-    await supabase
-      .from("tasks")
-      .update({
-        linear_url: n.url,
-        linear_state: n.state.name,
-        linear_state_type: n.state.type,
-        linear_priority: n.priority,
-        git_branch: n.branchName,
-        progress: stateToProgress(n.state.type, n.state.name),
-        priority: priorityMap(n.priority),
-        archived: n.state.type === "canceled",
-        linear_synced_at: new Date().toISOString(),
-      })
-      .eq("id", t.id);
+    const patch: Record<string, unknown> = {
+      linear_url: n.url,
+      linear_state: n.state.name,
+      linear_state_type: n.state.type,
+      linear_priority: n.priority,
+      git_branch: n.branchName,
+      progress: stateToProgress(n.state.type, n.state.name),
+      priority: priorityMap(n.priority),
+      linear_synced_at: new Date().toISOString(),
+    };
+    // Solo archiva si el issue está cancelado; nunca des-archiva (respeta lo
+    // que se haya archivado a mano / pasado al historial de la cola).
+    if (n.state.type === "canceled") patch.archived = true;
+    await supabase.from("tasks").update(patch).eq("id", t.id);
     updated++;
   }
   return { updated };
