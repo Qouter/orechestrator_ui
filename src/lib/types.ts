@@ -64,6 +64,7 @@ export interface Task {
   linear_priority: number | null;
   git_branch: string | null;
   linear_synced_at: string | null;
+  pr_url: string | null;
 }
 
 export interface Block {

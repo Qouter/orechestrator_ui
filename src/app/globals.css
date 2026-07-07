@@ -456,6 +456,26 @@ p {
   color: #5e6ad2;
   border-color: color-mix(in oklch, #5e6ad2 45%, var(--line));
 }
+.pr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--pg-hecho);
+  border: 1px solid color-mix(in oklch, var(--pg-hecho) 35%, var(--line));
+  background: color-mix(in oklch, var(--pg-hecho) 8%, var(--surface));
+  border-radius: 999px;
+  padding: 1px 7px 1px 6px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex: none;
+  transition: border-color 0.12s ease-out, background 0.12s ease-out;
+}
+.pr-badge:hover {
+  border-color: color-mix(in oklch, var(--pg-hecho) 55%, var(--line));
+  background: color-mix(in oklch, var(--pg-hecho) 14%, var(--surface));
+}
 .lin-linked {
   display: flex;
   align-items: center;

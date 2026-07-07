@@ -101,6 +101,20 @@ export function TaskCard({
           </a>
         )}
 
+        {task.pr_url && (
+          <a
+            className="pr-badge"
+            href={task.pr_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Abrir PR en GitHub"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PrIcon />
+            PR
+          </a>
+        )}
+
         {task.requested_by && (
           <span className="card-req">· {task.requested_by}</span>
         )}
@@ -131,6 +145,18 @@ function GripIcon() {
       <circle cx="10" cy="8" r="1.3" />
       <circle cx="6" cy="12" r="1.3" />
       <circle cx="10" cy="12" r="1.3" />
+    </svg>
+  );
+}
+function PrIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="4" cy="4" r="1.6" />
+      <circle cx="4" cy="12" r="1.6" />
+      <circle cx="12" cy="12" r="1.6" />
+      <path d="M4 5.6v4.8" />
+      <path d="M12 10.4V7.5A2.5 2.5 0 0 0 9.5 5H7.5" />
+      <path d="M9 3.5 7 5l2 1.5" />
     </svg>
   );
 }

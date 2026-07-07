@@ -243,6 +243,16 @@ export function TaskDrawer({
                   {editing.linear_state && (
                     <span className="lin-state">{editing.linear_state}</span>
                   )}
+                  {editing.pr_url && (
+                    <a
+                      className="pr-badge"
+                      href={editing.pr_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      PR ↗
+                    </a>
+                  )}
                   <button
                     className="btn btn-ghost"
                     style={{ marginLeft: "auto" }}

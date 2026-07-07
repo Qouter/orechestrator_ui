@@ -38,14 +38,21 @@ interface IssueNode {
   branchName: string | null;
   priority: number | null;
   state: { name: string; type: string };
+  attachments?: { nodes: { url: string }[] };
 }
+
+const PR_RE = /github\.com\/[^\s]+\/pull\/\d+/;
 
 /** Sync una vía Linear → app: refresca las tareas enlazadas (source='linear'). */
 export async function performSync(supabase: SupabaseClient) {
   const data = await linearGraphQL<{ issues: { nodes: IssueNode[] } }>(
     `query {
        issues(first: 250, filter: { assignee: { isMe: { eq: true } } }) {
-         nodes { identifier url branchName priority state { name type } }
+         nodes {
+           identifier url branchName priority
+           state { name type }
+           attachments(first: 20) { nodes { url } }
+         }
        }
      }`,
   );
@@ -61,12 +68,15 @@ export async function performSync(supabase: SupabaseClient) {
   for (const t of linked ?? []) {
     const n = byId.get(t.linear_id as string);
     if (!n) continue;
+    const prUrl =
+      n.attachments?.nodes.find((a) => PR_RE.test(a.url))?.url ?? null;
     const patch: Record<string, unknown> = {
       linear_url: n.url,
       linear_state: n.state.name,
       linear_state_type: n.state.type,
       linear_priority: n.priority,
       git_branch: n.branchName,
+      pr_url: prUrl,
       progress: stateToProgress(n.state.type, n.state.name),
       priority: priorityMap(n.priority),
       linear_synced_at: new Date().toISOString(),
