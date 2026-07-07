@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
+import { SyncButton } from "./SyncButton";
 import type { Profile } from "@/lib/types";
 
 export function Header({
@@ -28,6 +29,7 @@ export function Header({
         </Link>
       </nav>
       <div className="topbar-spacer" />
+      <SyncButton />
       <div className="user">
         {profile?.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element

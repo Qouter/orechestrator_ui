@@ -88,6 +88,19 @@ export function TaskCard({
           </span>
         )}
 
+        {task.linear_id && (
+          <a
+            className="linbadge"
+            href={task.linear_url ?? undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`Ver ${task.linear_id} en Linear`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {task.linear_id}
+          </a>
+        )}
+
         {task.requested_by && (
           <span className="card-req">· {task.requested_by}</span>
         )}

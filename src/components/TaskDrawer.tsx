@@ -9,6 +9,11 @@ import {
   type TaskInput,
 } from "@/app/actions/tasks";
 import {
+  createLinearIssue,
+  linkTask,
+  unlinkTask,
+} from "@/app/actions/linear";
+import {
   COMPLEXITY_LABEL,
   PHASE_LABEL,
   PHASES,
@@ -64,6 +69,8 @@ export function TaskDrawer({
   const [blockId, setBlockId] = useState<string | null>(
     editing?.block_id ?? null,
   );
+  const [linId, setLinId] = useState("");
+  const [linPending, startLin] = useTransition();
   const [pending, startTransition] = useTransition();
   const [activity, setActivity] = useState<Activity[] | null>(null);
 
@@ -219,6 +226,73 @@ export function TaskDrawer({
               ))}
             </select>
           </div>
+
+          {editing && (
+            <div className="field">
+              <label>Linear</label>
+              {editing.linear_id ? (
+                <div className="lin-linked">
+                  <a
+                    className="linbadge"
+                    href={editing.linear_url ?? undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {editing.linear_id}
+                  </a>
+                  {editing.linear_state && (
+                    <span className="lin-state">{editing.linear_state}</span>
+                  )}
+                  <button
+                    className="btn btn-ghost"
+                    style={{ marginLeft: "auto" }}
+                    disabled={linPending}
+                    onClick={() =>
+                      startLin(async () => {
+                        await unlinkTask(editing.id);
+                        window.location.reload();
+                      })
+                    }
+                  >
+                    Desenlazar
+                  </button>
+                </div>
+              ) : (
+                <div className="lin-link-row">
+                  <input
+                    className="input"
+                    placeholder="GTM-370"
+                    value={linId}
+                    onChange={(e) => setLinId(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-secondary"
+                    disabled={linPending || !linId.trim()}
+                    onClick={() =>
+                      startLin(async () => {
+                        await linkTask(editing.id, linId);
+                        window.location.reload();
+                      })
+                    }
+                  >
+                    Enlazar
+                  </button>
+                  <button
+                    className="btn btn-ghost"
+                    disabled={linPending}
+                    onClick={() =>
+                      startLin(async () => {
+                        await createLinearIssue(editing.id);
+                        window.location.reload();
+                      })
+                    }
+                  >
+                    {linPending ? "…" : "Crear en Linear"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {editing && (
             <div className="field">

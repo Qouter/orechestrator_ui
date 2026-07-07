@@ -55,6 +55,15 @@ export interface Task {
   updated_by: string | null;
   created_at: string;
   updated_at: string;
+  // Enlace con Linear (source='linear' cuando está enlazada)
+  source: "manual" | "linear";
+  linear_id: string | null;
+  linear_url: string | null;
+  linear_state: string | null;
+  linear_state_type: string | null;
+  linear_priority: number | null;
+  git_branch: string | null;
+  linear_synced_at: string | null;
 }
 
 export interface Block {
