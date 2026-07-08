@@ -20,6 +20,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { moveBlock } from "@/app/actions/blocks";
 import { toggleBlocksLike } from "@/app/actions/likes";
+import { updateTask } from "@/app/actions/tasks";
 import { BlockEditor } from "./BlockEditor";
 import { ComplexityBadge } from "./ComplexityBadge";
 import { LikeBar } from "./LikeBar";
@@ -68,9 +69,22 @@ export function BlocksView({
   currentUser: Profile | null;
 }) {
   const [blocks, setBlocks] = useState<Block[]>(initialBlocks);
+  const [taskList, setTaskList] = useState<Task[]>(tasks);
   const [editor, setEditor] = useState<EditorMode>(null);
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [likers, setLikers] = useState<Profile[]>(initialLikers);
+
+  function toggleDone(t: Task) {
+    const next: Progress = t.progress === "hecho" ? "por_empezar" : "hecho";
+    setTaskList((prev) =>
+      prev.map((x) => (x.id === t.id ? { ...x, progress: next } : x)),
+    );
+    updateTask(t.id, { progress: next }).catch(() =>
+      setTaskList((prev) =>
+        prev.map((x) => (x.id === t.id ? { ...x, progress: t.progress } : x)),
+      ),
+    );
+  }
 
   const likedByMe = currentUser
     ? likers.some((p) => p.id === currentUser.id)
@@ -95,16 +109,19 @@ export function BlocksView({
 
   const byBlock = useMemo(() => {
     const m = new Map<string, Task[]>();
-    for (const t of tasks) {
+    for (const t of taskList) {
       if (!t.block_id) continue;
       const arr = m.get(t.block_id);
       if (arr) arr.push(t);
       else m.set(t.block_id, [t]);
     }
     return m;
-  }, [tasks]);
+  }, [taskList]);
 
-  const unassigned = useMemo(() => tasks.filter((t) => !t.block_id), [tasks]);
+  const unassigned = useMemo(
+    () => taskList.filter((t) => !t.block_id),
+    [taskList],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -186,6 +203,7 @@ export function BlocksView({
                   open={open.has(b.id)}
                   onToggle={() => toggle(b.id)}
                   onEdit={() => setEditor({ kind: "edit", block: b })}
+                  onToggleDone={toggleDone}
                 />
               ))}
             </div>
@@ -199,7 +217,7 @@ export function BlocksView({
           <div className="bcard">
             <div className="btasks" style={{ paddingLeft: 15 }}>
               {unassigned.map((t) => (
-                <TaskRow key={t.id} t={t} />
+                <TaskRow key={t.id} t={t} onToggleDone={toggleDone} />
               ))}
             </div>
           </div>
@@ -232,6 +250,7 @@ function BlockCard({
   open,
   onToggle,
   onEdit,
+  onToggleDone,
 }: {
   block: Block;
   n: number;
@@ -239,6 +258,7 @@ function BlockCard({
   open: boolean;
   onToggle: () => void;
   onEdit: () => void;
+  onToggleDone: (t: Task) => void;
 }) {
   const {
     attributes,
@@ -329,7 +349,9 @@ function BlockCard({
           {tasks.length === 0 ? (
             <div className="btask-empty">Sin tareas en este bloque.</div>
           ) : (
-            tasks.map((t) => <TaskRow key={t.id} t={t} />)
+            tasks.map((t) => (
+              <TaskRow key={t.id} t={t} onToggleDone={onToggleDone} />
+            ))
           )}
         </div>
       )}
@@ -337,10 +359,24 @@ function BlockCard({
   );
 }
 
-function TaskRow({ t }: { t: Task }) {
+function TaskRow({
+  t,
+  onToggleDone,
+}: {
+  t: Task;
+  onToggleDone: (t: Task) => void;
+}) {
   const done = t.progress === "hecho";
   return (
     <div className="btask-row">
+      <button
+        className={`btask-check ${done ? "done" : ""}`}
+        onClick={() => onToggleDone(t)}
+        title={done ? "Marcar como pendiente" : "Marcar como hecha"}
+        aria-label={done ? "Marcar como pendiente" : "Marcar como hecha"}
+      >
+        <CheckIcon />
+      </button>
       <span className={`btask-title ${done ? "done" : ""}`}>{t.title}</span>
       <span
         className="chip"
@@ -366,6 +402,13 @@ function GripIcon() {
       <circle cx="6" cy="4" r="1.3" /><circle cx="10" cy="4" r="1.3" />
       <circle cx="6" cy="8" r="1.3" /><circle cx="10" cy="8" r="1.3" />
       <circle cx="6" cy="12" r="1.3" /><circle cx="10" cy="12" r="1.3" />
+    </svg>
+  );
+}
+function CheckIcon() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 8.5l3.2 3.2L13 4.8" />
     </svg>
   );
 }

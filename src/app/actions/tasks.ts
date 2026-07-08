@@ -91,6 +91,7 @@ export async function createTask(input: TaskInput) {
 
   await logActivity(supabase, userId, data.id, "create");
   revalidatePath("/");
+  revalidatePath("/bloques");
   return data as Task;
 }
 
@@ -140,6 +141,7 @@ export async function updateTask(id: string, patch: Partial<TaskInput>) {
     changes,
   );
   revalidatePath("/");
+  revalidatePath("/bloques");
   return data as Task;
 }
 
@@ -186,6 +188,7 @@ export async function deleteTask(id: string) {
     title: { from: current?.title, to: null },
   });
   revalidatePath("/");
+  revalidatePath("/bloques");
   return { ok: true };
 }
 

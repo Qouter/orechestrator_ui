@@ -972,6 +972,30 @@ p {
 .btask-row:last-child {
   border-bottom: none;
 }
+.btask-check {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  background: transparent;
+  color: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.btask-check:hover {
+  border-color: var(--pg-hecho);
+  color: var(--pg-hecho);
+}
+.btask-check.done {
+  background: var(--pg-hecho);
+  border-color: var(--pg-hecho);
+  color: #fff;
+}
 .btask-title {
   flex: 1;
   min-width: 0;
