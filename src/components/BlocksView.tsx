@@ -25,6 +25,7 @@ import { BlockEditor } from "./BlockEditor";
 import { ComplexityBadge } from "./ComplexityBadge";
 import { CopyIdButton } from "./CopyIdButton";
 import { LikeBar } from "./LikeBar";
+import { toast } from "./Toaster";
 import {
   PHASE_LABEL,
   PROGRESS_LABEL,
@@ -80,11 +81,22 @@ export function BlocksView({
     setTaskList((prev) =>
       prev.map((x) => (x.id === t.id ? { ...x, progress: next } : x)),
     );
-    updateTask(t.id, { progress: next }).catch(() =>
-      setTaskList((prev) =>
-        prev.map((x) => (x.id === t.id ? { ...x, progress: t.progress } : x)),
-      ),
-    );
+    updateTask(t.id, { progress: next })
+      .then(() =>
+        toast(
+          next === "hecho" ? "Marcada como hecha" : "Marcada como pendiente",
+          { description: t.title, variant: next === "hecho" ? "success" : "default" },
+        ),
+      )
+      .catch(() => {
+        setTaskList((prev) =>
+          prev.map((x) => (x.id === t.id ? { ...x, progress: t.progress } : x)),
+        );
+        toast("No se pudo actualizar la tarea", {
+          description: t.title,
+          variant: "error",
+        });
+      });
   }
 
   const likedByMe = currentUser
@@ -139,7 +151,9 @@ export function BlocksView({
       const next = arrayMove(prev, oldI, newI);
       const pos = midpoint(next.map((b) => b.position), newI);
       next[newI] = { ...next[newI], position: pos };
-      moveBlock(String(active.id), pos).catch(() => {});
+      moveBlock(String(active.id), pos).catch(() =>
+        toast("No se pudo reordenar los bloques", { variant: "error" }),
+      );
       return next;
     });
   }
@@ -154,16 +168,23 @@ export function BlocksView({
   }
 
   function onSaved(b: Block) {
+    const existed = blocks.some((x) => x.id === b.id);
     setBlocks((prev) =>
-      prev.some((x) => x.id === b.id)
+      existed
         ? prev.map((x) => (x.id === b.id ? b : x))
         : [...prev, b].sort((a, c) => a.position - c.position),
     );
     setEditor(null);
+    toast(existed ? "Bloque actualizado" : "Bloque creado", {
+      description: b.name,
+      variant: "success",
+    });
   }
   function onDeleted(id: string) {
+    const name = blocks.find((b) => b.id === id)?.name;
     setBlocks((prev) => prev.filter((b) => b.id !== id));
     setEditor(null);
+    toast("Bloque eliminado", { description: name });
   }
 
   return (

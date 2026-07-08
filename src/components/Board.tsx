@@ -28,8 +28,10 @@ import {
   queueReorder,
 } from "@/app/actions/tasks";
 import { toggleImplLike } from "@/app/actions/likes";
+import { toast } from "./Toaster";
 import {
   PHASES,
+  PHASE_LABEL,
   type Block,
   type Phase,
   type Profile,
@@ -232,7 +234,9 @@ export function BoardView({
         const next = arrayMove(prev, oldIndex, newIndex);
         const pos = midpoint(next.map((x) => x.position), newIndex);
         next[newIndex] = { ...next[newIndex], position: pos };
-        queueReorder(activeEntry, pos).catch(() => {});
+        queueReorder(activeEntry, pos).catch(() =>
+          toast("No se pudo reordenar la cola", { variant: "error" }),
+        );
         return next;
       });
       return;
@@ -263,7 +267,18 @@ export function BoardView({
       const nextArr = index === oldIndex ? arr : arrayMove(arr, oldIndex, index);
       const pos = midpoint(nextArr.map((t) => t.position), index);
       nextArr[index] = { ...nextArr[index], position: pos, phase };
-      moveTask(aId, phase, pos).catch(() => {});
+      const title = nextArr[index].title;
+      moveTask(aId, phase, pos)
+        .then(() => {
+          if (crossed)
+            toast(`Movida a ${PHASE_LABEL[phase]}`, { description: title });
+        })
+        .catch(() =>
+          toast("No se pudo mover la tarea", {
+            description: title,
+            variant: "error",
+          }),
+        );
       return { ...prev, [phase]: nextArr };
     });
   }
@@ -280,24 +295,36 @@ export function BoardView({
       archived_at: null,
     };
     setQueue((prev) => [...prev, tmp]);
+    const title = byId.get(taskId)?.title;
     queueAdd(taskId)
-      .then((real) =>
+      .then((real) => {
         setQueue((prev) =>
           prev.map((e) => (e.id === tmp.id ? (real as QueueEntry) : e)),
-        ),
-      )
-      .catch(() => setQueue((prev) => prev.filter((e) => e.id !== tmp.id)));
+        );
+        toast("Añadida a la cola", { description: title });
+      })
+      .catch(() => {
+        setQueue((prev) => prev.filter((e) => e.id !== tmp.id));
+        toast("No se pudo añadir a la cola", {
+          description: title,
+          variant: "error",
+        });
+      });
   }
 
   function removeFromQueue(entry: QueueEntry) {
     setQueue((prev) => prev.filter((e) => e.id !== entry.id));
+    toast("Quitada de la cola", { description: byId.get(entry.task_id)?.title });
     if (!entry.id.startsWith("tmp-"))
-      queueRemove(entry.id, entry.task_id).catch(() => {});
+      queueRemove(entry.id, entry.task_id).catch(() =>
+        toast("No se pudo quitar de la cola", { variant: "error" }),
+      );
   }
 
   // 1er clic: completa (se queda tachada). 2º clic: pasa al historial
   // y la tarea desaparece del tablero.
   function advanceQueueItem(entry: QueueEntry) {
+    const title = byId.get(entry.task_id)?.title;
     if (!entry.completed_at) {
       setQueue((prev) =>
         prev.map((e) =>
@@ -306,6 +333,7 @@ export function BoardView({
             : e,
         ),
       );
+      toast("Completada", { description: title, variant: "success" });
     } else {
       setQueue((prev) => prev.filter((e) => e.id !== entry.id));
       setBoard((prev) => {
@@ -314,8 +342,15 @@ export function BoardView({
           next[p] = prev[p].filter((t) => t.id !== entry.task_id);
         return next;
       });
+      toast("Movida al historial", { description: title });
     }
-    if (!entry.id.startsWith("tmp-")) queueAdvance(entry.id).catch(() => {});
+    if (!entry.id.startsWith("tmp-"))
+      queueAdvance(entry.id).catch(() =>
+        toast("No se pudo actualizar la cola", {
+          description: title,
+          variant: "error",
+        }),
+      );
   }
 
   function upsertTask(task: Task) {

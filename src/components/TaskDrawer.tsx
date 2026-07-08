@@ -13,6 +13,7 @@ import {
   linkTask,
   unlinkTask,
 } from "@/app/actions/linear";
+import { toast } from "./Toaster";
 import {
   COMPLEXITY_LABEL,
   PHASE_LABEL,
@@ -103,11 +104,22 @@ export function TaskDrawer({
       block_id: blockId,
     };
     startTransition(async () => {
-      const saved = editing
-        ? await updateTask(editing.id, input)
-        : await createTask(input);
-      onSaved(saved);
-      onClose();
+      try {
+        const saved = editing
+          ? await updateTask(editing.id, input)
+          : await createTask(input);
+        onSaved(saved);
+        onClose();
+        toast(editing ? "Cambios guardados" : "Tarea creada", {
+          description: saved.title,
+          variant: "success",
+        });
+      } catch {
+        toast(
+          editing ? "No se pudo guardar la tarea" : "No se pudo crear la tarea",
+          { variant: "error" },
+        );
+      }
     });
   }
 
@@ -115,9 +127,14 @@ export function TaskDrawer({
     if (!editing) return;
     if (!confirm("¿Borrar esta tarea?")) return;
     startTransition(async () => {
-      await deleteTask(editing.id);
-      onDeleted(editing.id);
-      onClose();
+      try {
+        await deleteTask(editing.id);
+        onDeleted(editing.id);
+        onClose();
+        toast("Tarea eliminada", { description: editing.title });
+      } catch {
+        toast("No se pudo eliminar la tarea", { variant: "error" });
+      }
     });
   }
 

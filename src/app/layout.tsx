@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk } from "next/font/google";
+import { Toaster } from "@/components/Toaster";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -19,7 +20,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${hanken.variable} h-full`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

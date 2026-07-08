@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { toast } from "./Toaster";
 import type { Task } from "@/lib/types";
 
 /** Copia el ID de la tarea: el de Linear (GTM-XXX) si está enlazada, si no el UUID. */
@@ -17,8 +18,9 @@ export function CopyIdButton({ task }: { task: Task }) {
         setCopied(true);
         if (timer.current) clearTimeout(timer.current);
         timer.current = setTimeout(() => setCopied(false), 1500);
+        toast("ID copiado", { description: id, variant: "success" });
       })
-      .catch(() => {});
+      .catch(() => toast("No se pudo copiar el ID", { variant: "error" }));
   }
 
   return (
