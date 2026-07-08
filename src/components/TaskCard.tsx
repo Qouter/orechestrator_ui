@@ -3,6 +3,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ComplexityBadge } from "./ComplexityBadge";
+import { CopyIdButton } from "./CopyIdButton";
 import {
   PRIORITY_LABEL,
   PROGRESS_LABEL,
@@ -118,6 +119,8 @@ export function TaskCard({
         {task.requested_by && (
           <span className="card-req">· {task.requested_by}</span>
         )}
+
+        <CopyIdButton task={task} />
 
         <button
           className="icon-btn card-queue"

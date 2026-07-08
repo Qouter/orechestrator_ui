@@ -1229,6 +1229,13 @@ p {
   color: var(--prio-urgente);
   background: var(--panel);
 }
+.copy-id:hover {
+  color: var(--ink);
+}
+.copy-id.copied,
+.copy-id.copied:hover {
+  color: var(--pg-hecho);
+}
 
 @media (max-width: 1000px) {
   .board-wrap {

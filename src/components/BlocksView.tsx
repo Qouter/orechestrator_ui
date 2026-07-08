@@ -23,6 +23,7 @@ import { toggleBlocksLike } from "@/app/actions/likes";
 import { updateTask } from "@/app/actions/tasks";
 import { BlockEditor } from "./BlockEditor";
 import { ComplexityBadge } from "./ComplexityBadge";
+import { CopyIdButton } from "./CopyIdButton";
 import { LikeBar } from "./LikeBar";
 import {
   PHASE_LABEL,
@@ -392,6 +393,7 @@ function TaskRow({
         {PROGRESS_LABEL[t.progress]}
       </span>
       {t.complexity && <ComplexityBadge value={t.complexity} />}
+      <CopyIdButton task={t} />
     </div>
   );
 }
