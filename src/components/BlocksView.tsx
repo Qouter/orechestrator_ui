@@ -29,6 +29,7 @@ import { toast } from "./Toaster";
 import {
   PHASE_LABEL,
   PROGRESS_LABEL,
+  isUntriaged,
   type Block,
   type Phase,
   type Profile,
@@ -400,6 +401,14 @@ function TaskRow({
         <CheckIcon />
       </button>
       <span className={`btask-title ${done ? "done" : ""}`}>{t.title}</span>
+      {isUntriaged(t) && (
+        <span
+          className="chip chip-triage"
+          title="Falta bloque o contexto (nota / enlace a Linear)"
+        >
+          Sin triar
+        </span>
+      )}
       <span
         className="chip"
         style={{ color: `var(${PHASE_VAR[t.phase]})` }}

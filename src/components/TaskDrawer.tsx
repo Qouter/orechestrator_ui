@@ -179,7 +179,7 @@ export function TaskDrawer({
               className="textarea"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Contexto, detalles…"
+              placeholder="El porqué y el qué, en 2-3 líneas. Si necesita más detalle, va a Linear (o al vault) y se enlaza aquí."
             />
           </div>
 

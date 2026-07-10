@@ -1,7 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { Header } from "@/components/Header";
 import { BoardView } from "@/components/Board";
-import type { Block, Profile, QueueEntry, Task } from "@/lib/types";
+import {
+  isUntriaged,
+  type Block,
+  type Profile,
+  type QueueEntry,
+  type Task,
+} from "@/lib/types";
 
 export default async function Page() {
   const supabase = await createClient();
@@ -41,11 +47,17 @@ export default async function Page() {
     .map((r) => (Array.isArray(r.profile) ? r.profile[0] : r.profile))
     .filter((p): p is Profile => !!p);
 
+  const tasks = (tasksRes.data as Task[]) ?? [];
+
   return (
     <div className="app">
-      <Header profile={profile} active="board" />
+      <Header
+        profile={profile}
+        active="board"
+        untriaged={tasks.filter(isUntriaged).length}
+      />
       <BoardView
-        initialTasks={(tasksRes.data as Task[]) ?? []}
+        initialTasks={tasks}
         initialQueue={(queueRes.data as QueueEntry[]) ?? []}
         initialLikers={likers}
         currentUser={profile}

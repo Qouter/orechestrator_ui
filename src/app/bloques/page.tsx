@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Header } from "@/components/Header";
 import { BlocksView } from "@/components/BlocksView";
-import type { Block, Profile, Task } from "@/lib/types";
+import { isUntriaged, type Block, type Profile, type Task } from "@/lib/types";
 
 export default async function BloquesPage() {
   const supabase = await createClient();
@@ -31,12 +31,18 @@ export default async function BloquesPage() {
     .map((r) => (Array.isArray(r.profile) ? r.profile[0] : r.profile))
     .filter((p): p is Profile => !!p);
 
+  const tasks = (tasksRes.data as Task[]) ?? [];
+
   return (
     <div className="app">
-      <Header profile={profile} active="blocks" />
+      <Header
+        profile={profile}
+        active="blocks"
+        untriaged={tasks.filter(isUntriaged).length}
+      />
       <BlocksView
         initialBlocks={(blocksRes.data as Block[]) ?? []}
-        tasks={(tasksRes.data as Task[]) ?? []}
+        tasks={tasks}
         initialLikers={likers}
         currentUser={profile}
       />

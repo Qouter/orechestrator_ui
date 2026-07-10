@@ -7,6 +7,7 @@ import { CopyIdButton } from "./CopyIdButton";
 import {
   PRIORITY_LABEL,
   PROGRESS_LABEL,
+  isUntriaged,
   type Progress,
   type Task,
 } from "@/lib/types";
@@ -86,6 +87,15 @@ export function TaskCard({
             }}
           >
             {PRIORITY_LABEL[task.priority]}
+          </span>
+        )}
+
+        {isUntriaged(task) && (
+          <span
+            className="chip chip-triage"
+            title="Falta bloque o contexto (nota / enlace a Linear)"
+          >
+            Sin triar
           </span>
         )}
 

@@ -6,9 +6,11 @@ import type { Profile } from "@/lib/types";
 export function Header({
   profile,
   active,
+  untriaged = 0,
 }: {
   profile: Profile | null;
   active: "board" | "blocks";
+  untriaged?: number;
 }) {
   return (
     <header className="topbar">
@@ -29,6 +31,15 @@ export function Header({
         </Link>
       </nav>
       <div className="topbar-spacer" />
+      {untriaged > 0 && (
+        <Link
+          className="triage-pill"
+          href="/bloques"
+          title="Tareas sin bloque o sin contexto (nota / enlace a Linear)"
+        >
+          {untriaged} sin triar
+        </Link>
+      )}
       <SyncButton />
       <div className="user">
         {profile?.avatar_url ? (

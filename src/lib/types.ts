@@ -67,6 +67,15 @@ export interface Task {
   pr_url: string | null;
 }
 
+/**
+ * Tarea "sin triar": le falta bloque, o le falta contexto (sin nota y sin
+ * issue de Linear donde viva el detalle). Convención de formato ligero:
+ * la nota son 2-3 líneas; lo denso vive en Linear/vault, enlazado.
+ */
+export function isUntriaged(t: Task): boolean {
+  return !t.block_id || (!t.note && !t.linear_id);
+}
+
 export interface Block {
   id: string;
   name: string;

@@ -561,6 +561,27 @@ p {
   background: color-mix(in oklch, var(--prc) 8%, var(--surface));
   font-weight: 600;
 }
+.chip-triage {
+  color: var(--prio-importante);
+  border-color: color-mix(in oklch, var(--prio-importante) 35%, var(--line));
+  background: color-mix(in oklch, var(--prio-importante) 8%, var(--surface));
+}
+.triage-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid color-mix(in oklch, var(--prio-importante) 35%, var(--line));
+  color: var(--prio-importante);
+  background: color-mix(in oklch, var(--prio-importante) 8%, var(--surface));
+  text-decoration: none;
+  white-space: nowrap;
+}
+.triage-pill:hover {
+  background: color-mix(in oklch, var(--prio-importante) 14%, var(--surface));
+}
 
 /* ── Drawer ─────────────────────────────────────────────────────────────── */
 .backdrop {
