@@ -28,6 +28,7 @@ import { LikeBar } from "./LikeBar";
 import { toast } from "./Toaster";
 import {
   PHASE_LABEL,
+  PRIORITY_LABEL,
   PROGRESS_LABEL,
   isUntriaged,
   type Block,
@@ -60,6 +61,8 @@ function midpoint(positions: number[], index: number): number {
 
 type EditorMode = { kind: "new" } | { kind: "edit"; block: Block } | null;
 
+const isPriority = (t: Task) => t.priority !== "normal";
+
 export function BlocksView({
   initialBlocks,
   tasks,
@@ -76,6 +79,7 @@ export function BlocksView({
   const [editor, setEditor] = useState<EditorMode>(null);
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [likers, setLikers] = useState<Profile[]>(initialLikers);
+  const [onlyPriority, setOnlyPriority] = useState(true);
 
   function toggleDone(t: Task) {
     const next: Progress = t.progress === "hecho" ? "por_empezar" : "hecho";
@@ -136,6 +140,9 @@ export function BlocksView({
     () => taskList.filter((t) => !t.block_id),
     [taskList],
   );
+  const unassignedShown = onlyPriority
+    ? unassigned.filter(isPriority)
+    : unassigned;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -192,13 +199,28 @@ export function BlocksView({
     <main className="blocks">
       <div className="blocks-head">
         <h1>Bloques</h1>
+        <div className="seg" role="group" aria-label="Filtro de tareas">
+          <button
+            aria-pressed={onlyPriority}
+            onClick={() => setOnlyPriority(true)}
+          >
+            Prioritarias
+          </button>
+          <button
+            aria-pressed={!onlyPriority}
+            onClick={() => setOnlyPriority(false)}
+          >
+            Todas
+          </button>
+        </div>
         <button className="btn btn-primary" onClick={() => setEditor({ kind: "new" })}>
           + Bloque
         </button>
       </div>
       <p className="blocks-sub">
         Los grandes frentes del proyecto, ordenados por prioridad. Arrastra para
-        reordenar; abre un bloque para ver sus tareas.
+        reordenar; abre un bloque para ver sus tareas
+        {onlyPriority ? " (solo urgentes e importantes)" : ""}.
       </p>
 
       {blocks.length === 0 ? (
@@ -223,6 +245,7 @@ export function BlocksView({
                   block={b}
                   n={i + 1}
                   tasks={byBlock.get(b.id) ?? []}
+                  onlyPriority={onlyPriority}
                   open={open.has(b.id)}
                   onToggle={() => toggle(b.id)}
                   onEdit={() => setEditor({ kind: "edit", block: b })}
@@ -236,14 +259,24 @@ export function BlocksView({
 
       {unassigned.length > 0 && (
         <div className="unassigned">
-          <h2>Sin bloque · {unassigned.length}</h2>
-          <div className="bcard">
-            <div className="btasks" style={{ paddingLeft: 15 }}>
-              {unassigned.map((t) => (
-                <TaskRow key={t.id} t={t} onToggleDone={toggleDone} />
-              ))}
+          <h2>
+            Sin bloque · {unassignedShown.length}
+            {unassignedShown.length < unassigned.length && (
+              <span className="filter-hint">
+                {" "}
+                (+{unassigned.length - unassignedShown.length} con el filtro)
+              </span>
+            )}
+          </h2>
+          {unassignedShown.length > 0 && (
+            <div className="bcard">
+              <div className="btasks" style={{ paddingLeft: 15 }}>
+                {unassignedShown.map((t) => (
+                  <TaskRow key={t.id} t={t} onToggleDone={toggleDone} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -270,6 +303,7 @@ function BlockCard({
   block,
   n,
   tasks,
+  onlyPriority,
   open,
   onToggle,
   onEdit,
@@ -278,6 +312,7 @@ function BlockCard({
   block: Block;
   n: number;
   tasks: Task[];
+  onlyPriority: boolean;
   open: boolean;
   onToggle: () => void;
   onEdit: () => void;
@@ -302,6 +337,7 @@ function BlockCard({
   const urg = tasks.filter((t) => t.priority === "urgente").length;
   const pct = total ? Math.round((done / total) * 100) : 0;
   const cnt = (p: Phase) => tasks.filter((t) => t.phase === p).length;
+  const shown = onlyPriority ? tasks.filter(isPriority) : tasks;
 
   return (
     <section ref={setNodeRef} style={style} className={`bcard ${open ? "open" : ""}`}>
@@ -371,8 +407,13 @@ function BlockCard({
         <div className="btasks">
           {tasks.length === 0 ? (
             <div className="btask-empty">Sin tareas en este bloque.</div>
+          ) : shown.length === 0 ? (
+            <div className="btask-empty">
+              Sin tareas prioritarias — {tasks.length}{" "}
+              {tasks.length === 1 ? "oculta" : "ocultas"} por el filtro.
+            </div>
           ) : (
-            tasks.map((t) => (
+            shown.map((t) => (
               <TaskRow key={t.id} t={t} onToggleDone={onToggleDone} />
             ))
           )}
@@ -401,6 +442,19 @@ function TaskRow({
         <CheckIcon />
       </button>
       <span className={`btask-title ${done ? "done" : ""}`}>{t.title}</span>
+      {t.priority !== "normal" && (
+        <span
+          className="chip chip-prio"
+          style={{
+            ["--prc" as string]:
+              t.priority === "urgente"
+                ? "var(--prio-urgente)"
+                : "var(--prio-importante)",
+          }}
+        >
+          {PRIORITY_LABEL[t.priority]}
+        </span>
+      )}
       {isUntriaged(t) && (
         <span
           className="chip chip-triage"

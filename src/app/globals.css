@@ -1033,6 +1033,11 @@ p {
   font-size: var(--t-sm);
   padding: 6px 0;
 }
+.filter-hint {
+  color: var(--ink-faint);
+  font-weight: 400;
+  font-size: var(--t-sm);
+}
 .blocks-empty {
   text-align: center;
   color: var(--ink-muted);
